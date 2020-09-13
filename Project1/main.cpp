@@ -22,6 +22,9 @@ glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 
 GLuint DVDtextureID;
 
+float lastTicks = 0.0f;
+float DVDposition = 0.0f;
+
 GLuint LoadTexture(const char* filePath) {
 	int w, h, n;
 	unsigned char* image = stbi_load(filePath, &w, &h, &n, STBI_rgb_alpha);
@@ -83,10 +86,19 @@ void ProcessInput() {
 	}
 }
 
-void Update() {}
+void Update() {
+	float ticks = (float)SDL_GetTicks() / 1000.0f;
+	float deltaTime = ticks - lastTicks;
+	lastTicks = ticks;
+
+	DVDposition += 0.5f * deltaTime;
+}
 
 void Render() {
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::translate(modelMatrix, glm::vec3(DVDposition, DVDposition, 0.0f));
 
 	program.SetModelMatrix(modelMatrix);
 
