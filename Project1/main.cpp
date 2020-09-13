@@ -10,7 +10,7 @@
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
 
-int main(int argc, char* argv[]) {
+void Initialize() {
 	SDL_Init(SDL_INIT_VIDEO);
 	displayWindow = SDL_CreateWindow("Project 1", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
 	SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
@@ -21,19 +21,37 @@ int main(int argc, char* argv[]) {
 #endif
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+}
 
+void ProcessInput() {
 	SDL_Event event;
-	while (gameIsRunning) {
-		while (SDL_PollEvent(&event)) {
-			if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
-				gameIsRunning = false;
-			}
+	while (SDL_PollEvent(&event)) {
+		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+			gameIsRunning = false;
 		}
+	}
+}
 
-		glClear(GL_COLOR_BUFFER_BIT);
-		SDL_GL_SwapWindow(displayWindow);
+void Update() {}
+
+void Render() {
+	glClear(GL_COLOR_BUFFER_BIT);
+	SDL_GL_SwapWindow(displayWindow);
+}
+
+void Shutdown() {
+	SDL_Quit();
+}
+
+int main(int argc, char* argv[]) {
+	Initialize();
+
+	while (gameIsRunning) {
+		ProcessInput();
+		Update();
+		Render();
 	}
 
-	SDL_Quit();
+	Shutdown();
 	return 0;
 }
