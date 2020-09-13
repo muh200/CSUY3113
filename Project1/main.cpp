@@ -4,11 +4,15 @@
 #include <GL/glew.h>
 #endif
 
+#define GL_GLEXT_PROTOTYPES 1
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include "ShaderProgram.h"
 
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
+
+ShaderProgram program;
 
 void Initialize() {
 	SDL_Init(SDL_INIT_VIDEO);
