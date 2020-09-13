@@ -24,6 +24,7 @@ GLuint DVDtextureID;
 
 float lastTicks = 0.0f;
 float DVDposition = 0.0f;
+float direction = 1.0f;
 
 GLuint LoadTexture(const char* filePath) {
 	int w, h, n;
@@ -91,7 +92,15 @@ void Update() {
 	float deltaTime = ticks - lastTicks;
 	lastTicks = ticks;
 
-	DVDposition += 0.5f * deltaTime;
+	DVDposition += 0.5f * direction * deltaTime;
+	float maxPosition = 3.5f;
+	if (DVDposition > maxPosition) {
+		DVDposition = maxPosition;
+		direction = -1.0f;
+	} else if (DVDposition < -maxPosition) {
+		DVDposition = -maxPosition;
+		direction = 1.0f;
+	}
 }
 
 void Render() {

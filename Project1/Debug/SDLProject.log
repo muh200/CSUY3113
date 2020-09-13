@@ -1,3 +1,1 @@
-﻿  main.cpp
-Z:\projects\CSUY3113\Project1\main.cpp(94,32): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-  SDLProject.vcxproj -> Z:\projects\CSUY3113\Project1\Debug\SDLProject.exe
+﻿  SDLProject.vcxproj -> Z:\projects\CSUY3113\Project1\Debug\SDLProject.exe
