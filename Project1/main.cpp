@@ -20,11 +20,12 @@ bool gameIsRunning = true;
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 
-GLuint DVDtextureID;
+GLuint DVDtextureID, PinwheelTextureID;
 
 float lastTicks = 0.0f;
 float DVDposition = 0.0f;
 float direction = 1.0f;
+float pinwheelDegree = 0.0f;
 
 GLuint LoadTexture(const char* filePath) {
 	int w, h, n;
@@ -76,6 +77,7 @@ void Initialize() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	DVDtextureID = LoadTexture("dvd_512x512.png");
+	PinwheelTextureID = LoadTexture("pinwheel_512x512.png");
 }
 
 void ProcessInput() {
@@ -101,6 +103,11 @@ void Update() {
 		DVDposition = -maxPosition;
 		direction = 1.0f;
 	}
+
+	pinwheelDegree += 90.0f * deltaTime;
+	if (pinwheelDegree > 360.0f) {
+		pinwheelDegree = 0.0f;
+	}
 }
 
 void Render() {
@@ -120,6 +127,23 @@ void Render() {
 	glEnableVertexAttribArray(program.texCoordAttribute);
 
 	glBindTexture(GL_TEXTURE_2D, DVDtextureID);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glDisableVertexAttribArray(program.positionAttribute);
+	glDisableVertexAttribArray(program.texCoordAttribute);
+
+
+	modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::rotate(modelMatrix, glm::radians(pinwheelDegree), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	program.SetModelMatrix(modelMatrix);
+
+	glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+	glEnableVertexAttribArray(program.positionAttribute);
+	glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+	glEnableVertexAttribArray(program.texCoordAttribute);
+
+	glBindTexture(GL_TEXTURE_2D, PinwheelTextureID);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	glDisableVertexAttribArray(program.positionAttribute);
