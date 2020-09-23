@@ -37,6 +37,11 @@ Rectangle ball{glm::vec3(-0.25, 0.25, 0), glm::vec3(0.25, -0.25, 0), glm::vec3(0
 
 float lastTicks = 0.0f;
 
+const float VIEW_LEFT = -5.0f;
+const float VIEW_RIGHT = 5.0f;
+const float VIEW_BOTTOM = -3.75f;
+const float VIEW_TOP = 3.75f;
+
 bool randomBool() {
 	return std::rand() < (RAND_MAX / 2);
 }
@@ -66,6 +71,18 @@ void drawRectangle(const Rectangle& rect) {
 	glDisableVertexAttribArray(program.positionAttribute);
 }
 
+void movePaddle(Rectangle& paddle, float direction, float speed, float deltaTime) {
+	paddle.position[1] += direction * speed * deltaTime;
+	const float positionMax = VIEW_TOP - paddle.topLeft[1];
+	const float positionMin = VIEW_BOTTOM - paddle.bottomRight[1];
+
+	if (paddle.position[1] > positionMax) {
+		paddle.position[1] = positionMax;
+	} else if (paddle.position[1] < positionMin) {
+		paddle.position[1] = positionMin;
+	}
+}
+
 void Initialize() {
 	SDL_Init(SDL_INIT_VIDEO);
 	displayWindow = SDL_CreateWindow("Project 2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
@@ -82,7 +99,7 @@ void Initialize() {
 
 	viewMatrix = glm::mat4(1.0f);
 	modelMatrix = glm::mat4(1.0f);
-	projectionMatrix = glm::ortho(-5.0f, 5.0f, -3.75f, 3.75f, -1.0f, 1.0f);
+	projectionMatrix = glm::ortho(VIEW_LEFT, VIEW_RIGHT, VIEW_BOTTOM, VIEW_TOP, -1.0f, 1.0f);
 
 	program.SetProjectionMatrix(projectionMatrix);
 	program.SetViewMatrix(viewMatrix);
@@ -139,21 +156,8 @@ void Update() {
 
 	const float paddleSpeed = 5.0f;
 
-	rightPaddle.position[1] += rightPaddleDirection * paddleSpeed * deltaTime;
-
-	if (rightPaddle.position[1] > 2.75) {
-		rightPaddle.position[1] = 2.75;
-	} else if (rightPaddle.position[1] < -2.75) {
-		rightPaddle.position[1] = -2.75;
-	}
-
-	leftPaddle.position[1] += leftPaddleDirection * paddleSpeed * deltaTime;
-
-	if (leftPaddle.position[1] > 2.75) {
-		leftPaddle.position[1] = 2.75;
-	} else if (leftPaddle.position[1] < -2.75) {
-		leftPaddle.position[1] = -2.75;
-	}
+	movePaddle(rightPaddle, rightPaddleDirection, paddleSpeed, deltaTime);
+	movePaddle(leftPaddle, leftPaddleDirection, paddleSpeed, deltaTime);
 
 	const float ballSpeed = 5.0f;
 	ball.position += ballDirection * ballSpeed * deltaTime;
