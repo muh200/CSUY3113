@@ -23,6 +23,9 @@ float rightPaddlePosition = 0.0f;
 float leftPaddleDirection = 0.0f;
 float leftPaddlePosition = 0.0f;
 
+glm::vec3 ballPosition = glm::vec3(0, 0, 0);
+glm::vec3 ballDirection = glm::vec3(0, 0, 0);
+
 float lastTicks = 0.0f;
 
 void Initialize() {
@@ -50,6 +53,8 @@ void Initialize() {
 	glUseProgram(program.programID);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+	ballDirection = glm::vec3(0, -1.0f, 0);
 }
 
 void ProcessInput() {
@@ -104,6 +109,17 @@ void Update() {
 	} else if (leftPaddlePosition < -2.75) {
 		leftPaddlePosition = -2.75;
 	}
+
+	const float ballSpeed = 5.0f;
+	ballPosition += ballDirection * ballSpeed * deltaTime;
+
+	if (ballPosition[1] < -3.5) {
+		ballPosition[1] = -3.5;
+		ballDirection[1] *= -1;
+	} else if (ballPosition[1] > 3.5) {
+		ballPosition[1] = 3.5;
+		ballDirection[1] *= -1;
+	}
 }
 
 void Render() {
@@ -128,6 +144,18 @@ void Render() {
 	program.SetModelMatrix(modelMatrix);
 
 	glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, paddleVertices);
+	glEnableVertexAttribArray(program.positionAttribute);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDisableVertexAttribArray(program.positionAttribute);
+
+	float ballVertices[] = { -0.25, -0.25, 0.25, -0.25, 0.25, 0.25, -0.25, -0.25, 0.25, 0.25, -0.25, 0.25 };
+
+	modelMatrix = glm::mat4(1.0f);
+	modelMatrix = glm::translate(modelMatrix, ballPosition);
+
+	program.SetModelMatrix(modelMatrix);
+
+	glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, ballVertices);
 	glEnableVertexAttribArray(program.positionAttribute);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glDisableVertexAttribArray(program.positionAttribute);
