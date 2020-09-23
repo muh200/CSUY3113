@@ -22,6 +22,7 @@ struct Rectangle {
 
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
+bool pongIsRunning = true;
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
@@ -96,6 +97,14 @@ void moveBall(Rectangle& ball, glm::vec3 direction, float speed, float deltaTime
 	} else if (ball.position[1] > maxY) {
 		ball.position[1] = maxY;
 		ballDirection[1] *= -1;
+	}
+
+	if (ball.position[0] < minX) {
+		ball.position[0] = minX;
+		pongIsRunning = false;
+	} else if (ball.position[0] > maxX) {
+		ball.position[0] = maxX;
+		pongIsRunning = false;
 	}
 }
 
@@ -198,8 +207,10 @@ int main(int argc, char* argv[]) {
 
 	while (gameIsRunning) {
 		ProcessInput();
-		Update();
-		Render();
+		if (pongIsRunning) {
+			Update();
+			Render();
+		}
 	}
 
 	Shutdown();
