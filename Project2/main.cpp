@@ -47,6 +47,14 @@ bool randomBool() {
 	return std::rand() < (RAND_MAX / 2);
 }
 
+bool isColliding(const Rectangle& a, const Rectangle& b) {
+	const float xDiff = fabs(a.position[0] - b.position[0]);
+	const float yDiff = fabs(a.position[1] - b.position[1]);
+	const float xDistance = xDiff - (a.bottomRight[0] + b.bottomRight[0]);
+	const float yDistance = yDiff - (a.topLeft[1] + b.topLeft[1]);
+	return xDistance < 0 && yDistance < 0;
+}
+
 void drawRectangle(const Rectangle& rect) {
 	modelMatrix = glm::translate(glm::mat4(1.0f), rect.position);
 	program.SetModelMatrix(modelMatrix);
@@ -84,7 +92,7 @@ void movePaddle(Rectangle& paddle, float direction, float speed, float deltaTime
 	}
 }
 
-void moveBall(Rectangle& ball, glm::vec3 direction, float speed, float deltaTime) {
+void moveBall(Rectangle& ball, glm::vec3& direction, float speed, float deltaTime) {
 	ball.position += direction * speed * deltaTime;
 	const float maxY = VIEW_TOP - ball.topLeft[1];
 	const float minY = VIEW_BOTTOM - ball.bottomRight[1];
@@ -105,6 +113,11 @@ void moveBall(Rectangle& ball, glm::vec3 direction, float speed, float deltaTime
 	} else if (ball.position[0] > maxX) {
 		ball.position[0] = maxX;
 		pongIsRunning = false;
+	}
+
+	if ((isColliding(ball, leftPaddle) && direction[0] < 0) ||
+		(isColliding(ball, rightPaddle) && direction[0] > 0)) {
+		ballDirection[0] *= -1;
 	}
 }
 
@@ -184,7 +197,7 @@ void Update() {
 	movePaddle(rightPaddle, rightPaddleDirection, paddleSpeed, deltaTime);
 	movePaddle(leftPaddle, leftPaddleDirection, paddleSpeed, deltaTime);
 
-	const float ballSpeed = 5.0f;
+	const float ballSpeed = 4.0f;
 	moveBall(ball, ballDirection, ballSpeed, deltaTime);
 }
 
