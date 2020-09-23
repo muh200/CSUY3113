@@ -11,6 +11,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 
+#include <cstdlib>
+#include <ctime>
+
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
 
@@ -27,6 +30,10 @@ glm::vec3 ballPosition = glm::vec3(0, 0, 0);
 glm::vec3 ballDirection = glm::vec3(0, 0, 0);
 
 float lastTicks = 0.0f;
+
+bool randomBool() {
+	return std::rand() < (RAND_MAX / 2);
+}
 
 void Initialize() {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -54,7 +61,14 @@ void Initialize() {
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	ballDirection = glm::vec3(0, -1.0f, 0);
+	std::srand(std::time(nullptr));
+	ballDirection = glm::vec3(1, 1, 0);
+	if (randomBool()) {
+		ballDirection[0] = -1;
+	}
+	if (randomBool()) {
+		ballDirection[1] = -1;
+	}
 }
 
 void ProcessInput() {
