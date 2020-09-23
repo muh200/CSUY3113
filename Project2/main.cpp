@@ -83,6 +83,22 @@ void movePaddle(Rectangle& paddle, float direction, float speed, float deltaTime
 	}
 }
 
+void moveBall(Rectangle& ball, glm::vec3 direction, float speed, float deltaTime) {
+	ball.position += direction * speed * deltaTime;
+	const float maxY = VIEW_TOP - ball.topLeft[1];
+	const float minY = VIEW_BOTTOM - ball.bottomRight[1];
+	const float minX = VIEW_LEFT - ball.topLeft[0];
+	const float maxX = VIEW_RIGHT - ball.bottomRight[0];
+
+	if (ball.position[1] < minY) {
+		ball.position[1] = minY;
+		ballDirection[1] *= -1;
+	} else if (ball.position[1] > maxY) {
+		ball.position[1] = maxY;
+		ballDirection[1] *= -1;
+	}
+}
+
 void Initialize() {
 	SDL_Init(SDL_INIT_VIDEO);
 	displayWindow = SDL_CreateWindow("Project 2", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
@@ -160,15 +176,7 @@ void Update() {
 	movePaddle(leftPaddle, leftPaddleDirection, paddleSpeed, deltaTime);
 
 	const float ballSpeed = 5.0f;
-	ball.position += ballDirection * ballSpeed * deltaTime;
-
-	if (ball.position[1] < -3.5) {
-		ball.position[1] = -3.5;
-		ballDirection[1] *= -1;
-	} else if (ball.position[1] > 3.5) {
-		ball.position[1] = 3.5;
-		ballDirection[1] *= -1;
-	}
+	moveBall(ball, ballDirection, ballSpeed, deltaTime);
 }
 
 void Render() {
