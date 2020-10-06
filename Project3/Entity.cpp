@@ -13,6 +13,11 @@ Entity::Entity()
 
 void Entity::Update(float deltaTime, Entity *platforms, int platformCount)
 {
+    collidedTop = false;
+    collidedBottom = false;
+    collidedLeft = false;
+    collidedRight = false;
+
     if (animIndices != NULL) {
         if (glm::length(movement) != 0) {
             animTime += deltaTime;
@@ -57,10 +62,12 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
             if (velocity.x > 0) {
                 position.x -= penetrationX;
                 velocity.x = 0;
+                collidedRight = true;
             }
             else if (velocity.x < 0) {
                 position.x += penetrationX;
                 velocity.x = 0;
+                collidedLeft = true;
             }
         }
     }
@@ -78,10 +85,12 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount)
             if (velocity.y > 0) {
                 position.y -= penetrationY;
                 velocity.y = 0;
+                collidedTop = true;
             }
             else if (velocity.y < 0) {
                 position.y += penetrationY;
                 velocity.y = 0;
+                collidedBottom = true;
             }
         }
     }

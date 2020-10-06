@@ -37,6 +37,11 @@ public:
     float animTime = 0;
     int animCols = 0;
     int animRows = 0;
+
+    bool collidedTop = false;
+    bool collidedBottom = false;
+    bool collidedLeft = false;
+    bool collidedRight = false;
     
     Entity();
 
