@@ -3,6 +3,9 @@
 Entity::Entity()
 {
     position = glm::vec3(0);
+    movement = glm::vec3(0);
+    acceleration = glm::vec3(0);
+    velocity = glm::vec3(0);
     speed = 0;
     
     modelMatrix = glm::mat4(1.0f);
@@ -27,9 +30,12 @@ void Entity::Update(float deltaTime)
             animIndex = 0;
         }
     }
+
+    // moving left and right should change the acceleration, not the velocity
+    acceleration.x = movement.x * speed;
+    velocity += acceleration * deltaTime;
     
-    
-    position += movement * speed * deltaTime;
+    position += velocity * deltaTime;
     
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);

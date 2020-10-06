@@ -89,6 +89,7 @@ void Initialize() {
     state.player = new Entity();
     state.player->position = glm::vec3(0);
     state.player->movement = glm::vec3(0);
+    state.player->acceleration = glm::vec3(0, -0.05, 0);
     state.player->speed = 1.0f;
     state.player->textureID = LoadTexture("george_0.png");
     
