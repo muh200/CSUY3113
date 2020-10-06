@@ -18,6 +18,9 @@ public:
     glm::vec3 acceleration;
     glm::vec3 velocity;
     float speed;
+
+    float width = 1;
+    float height = 1;
     
     GLuint textureID;
     
@@ -36,8 +39,11 @@ public:
     int animRows = 0;
     
     Entity();
-    
-    void Update(float deltaTime);
+
+    void Update(float deltaTime, Entity *platforms, int platformCount);
+    void CheckCollisionsX(Entity *objects, int objectCount);
+    void CheckCollisionsY(Entity *objects, int objectCount);
+    bool CheckCollision(Entity* other);
     void Render(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
 };

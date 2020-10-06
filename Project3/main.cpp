@@ -122,7 +122,7 @@ void Initialize() {
     state.platforms[2].position = glm::vec3(1, -3.75f, 0);
 
     for (int i = 0;  i < PLATFORM_COUNT; ++i) {
-        state.platforms[i].Update(0);
+        state.platforms[i].Update(0, nullptr, 0);
     }
 }
 
@@ -185,7 +185,7 @@ void Update() {
     }
     while (deltaTime >= FIXED_TIMESTEP) {
         // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
-        state.player->Update(FIXED_TIMESTEP);
+        state.player->Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;

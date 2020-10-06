@@ -11,7 +11,7 @@ Entity::Entity()
     modelMatrix = glm::mat4(1.0f);
 }
 
-void Entity::Update(float deltaTime)
+void Entity::Update(float deltaTime, Entity *platforms, int platformCount)
 {
     if (animIndices != NULL) {
         if (glm::length(movement) != 0) {
@@ -35,10 +35,64 @@ void Entity::Update(float deltaTime)
     acceleration.x = movement.x * speed;
     velocity += acceleration * deltaTime;
     
-    position += velocity * deltaTime;
-    
+    position.y += velocity.y * deltaTime;
+    CheckCollisionsY(platforms, platformCount);
+
+    position.x += velocity.x * deltaTime;
+    CheckCollisionsX(platforms, platformCount);
+
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);
+}
+
+void Entity::CheckCollisionsX(Entity *objects, int objectCount)
+{
+    for (int i = 0; i < objectCount; i++)
+    {
+        Entity *object = &objects[i];
+        if (CheckCollision(object))
+        {
+            float xdist = fabs(position.x - object->position.x);
+            float penetrationX = fabs(xdist - (width / 2.0f) - (object->width / 2.0f));
+            if (velocity.x > 0) {
+                position.x -= penetrationX;
+                velocity.x = 0;
+            }
+            else if (velocity.x < 0) {
+                position.x += penetrationX;
+                velocity.x = 0;
+            }
+        }
+    }
+}
+
+void Entity::CheckCollisionsY(Entity *objects, int objectCount)
+{
+    for (int i = 0; i < objectCount; i++)
+    {
+        Entity *object = &objects[i];
+        if (CheckCollision(object))
+        {
+            float ydist = fabs(position.y - object->position.y);
+            float penetrationY = fabs(ydist - (height / 2.0f) - (object->height / 2.0f));
+            if (velocity.y > 0) {
+                position.y -= penetrationY;
+                velocity.y = 0;
+            }
+            else if (velocity.y < 0) {
+                position.y += penetrationY;
+                velocity.y = 0;
+            }
+        }
+    }
+}
+
+bool Entity::CheckCollision(Entity* other)
+{
+    float xdist = fabs(position.x - other->position.x) - ((width + other->width) / 2.0f);
+    float ydist = fabs(position.y - other->position.y) - ((height + other->height) / 2.0f);
+
+    return xdist < 0 && ydist < 0;
 }
 
 void Entity::DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index)
