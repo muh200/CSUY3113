@@ -16,6 +16,10 @@
 
 #include "Entity.h"
 
+#define FIXED_TIMESTEP 0.0166666f
+float lastTicks = 0;
+float accumulator = 0.0f;
+
 struct GameState {
     Entity *player;
 };
@@ -151,18 +155,22 @@ void ProcessInput() {
 
 }
 
-float lastTicks = 0.0f;
-
 void Update() {
     float ticks = (float)SDL_GetTicks() / 1000.0f;
     float deltaTime = ticks - lastTicks;
     lastTicks = ticks;
-    
-  
-    
-    state.player->Update(deltaTime);
+    deltaTime += accumulator;
+    if (deltaTime < FIXED_TIMESTEP) {
+        accumulator = deltaTime;
+        return;
+    }
+    while (deltaTime >= FIXED_TIMESTEP) {
+        // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
+        state.player->Update(FIXED_TIMESTEP);
+        deltaTime -= FIXED_TIMESTEP;
+    }
+    accumulator = deltaTime;
 }
-
 
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
