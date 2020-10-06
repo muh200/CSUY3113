@@ -20,8 +20,11 @@
 float lastTicks = 0;
 float accumulator = 0.0f;
 
+#define PLATFORM_COUNT 3
+
 struct GameState {
     Entity *player;
+    Entity *platforms;
 };
 
 GameState state;
@@ -105,7 +108,22 @@ void Initialize() {
     state.player->animCols = 4;
     state.player->animRows = 4;
     
- 
+    state.platforms = new Entity[PLATFORM_COUNT];
+
+    GLuint platformTextureID = LoadTexture("platformPack_tile001.png");
+
+    state.platforms[0].textureID = platformTextureID;
+    state.platforms[0].position = glm::vec3(-1, -3.75f, 0);
+
+    state.platforms[1].textureID = platformTextureID;
+    state.platforms[1].position = glm::vec3(0, -3.75f, 0);
+
+    state.platforms[2].textureID = platformTextureID;
+    state.platforms[2].position = glm::vec3(1, -3.75f, 0);
+
+    for (int i = 0;  i < PLATFORM_COUNT; ++i) {
+        state.platforms[i].Update(0);
+    }
 }
 
 void ProcessInput() {
@@ -176,8 +194,10 @@ void Update() {
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
 
+    for (int i = 0; i < PLATFORM_COUNT; ++i) {
+        state.platforms[i].Render(&program);
+    }
 
-    
     state.player->Render(&program);
     
     SDL_GL_SwapWindow(displayWindow);
