@@ -80,7 +80,7 @@ void Initialize() {
     
     glUseProgram(program.programID);
     
-    glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    glClearColor(0.45f, 0.45f, 0.57f, 1.0f);
     glEnable(GL_BLEND);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -94,23 +94,12 @@ void Initialize() {
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -0.05, 0);
     state.player->speed = 1.0f;
-    state.player->textureID = LoadTexture("george_0.png");
-    
-    state.player->animRight = new int[4] {3, 7, 11, 15};
-    state.player->animLeft = new int[4] {1, 5, 9, 13};
-    state.player->animUp = new int[4] {2, 6, 10, 14};
-    state.player->animDown = new int[4] {0, 4, 8, 12};
+    state.player->textureID = LoadTexture("rocket.png");
+    state.player->width = 0.73f;
 
-    state.player->animIndices = state.player->animRight;
-    state.player->animFrames = 4;
-    state.player->animIndex = 0;
-    state.player->animTime = 0;
-    state.player->animCols = 4;
-    state.player->animRows = 4;
-    
     state.platforms = new Entity[PLATFORM_COUNT];
 
-    GLuint platformTextureID = LoadTexture("platformPack_tile001.png");
+    GLuint platformTextureID = LoadTexture("tnt_tile.png");
 
     state.platforms[0].textureID = platformTextureID;
     state.platforms[0].position = glm::vec3(-1, -3.75f, 0);
