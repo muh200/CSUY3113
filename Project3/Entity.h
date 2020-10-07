@@ -11,8 +11,12 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 
+enum EntityType { PLAYER, BOMB_TILE, LANDING_TILE };
+
 class Entity {
 public:
+    EntityType type;
+
     glm::vec3 position;
     glm::vec3 movement;
     glm::vec3 acceleration;
@@ -38,10 +42,10 @@ public:
     int animCols = 0;
     int animRows = 0;
 
-    bool collidedTop = false;
-    bool collidedBottom = false;
-    bool collidedLeft = false;
-    bool collidedRight = false;
+    Entity *collidedTop = nullptr;
+    Entity *collidedBottom = nullptr;
+    Entity *collidedLeft = nullptr;
+    Entity *collidedRight = nullptr;
     
     Entity();
 

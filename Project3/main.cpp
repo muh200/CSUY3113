@@ -16,15 +16,21 @@
 
 #include "Entity.h"
 
+#include <vector>
+
 #define FIXED_TIMESTEP 0.0166666f
 float lastTicks = 0;
 float accumulator = 0.0f;
 
 #define PLATFORM_COUNT 3
 
+enum GameMode { PLAYING, WON, LOST };
+
 struct GameState {
     Entity *player;
     Entity *platforms;
+    GameMode mode = PLAYING;
+    GLuint fontTextureID;
 };
 
 GameState state;
@@ -34,6 +40,60 @@ bool gameIsRunning = true;
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
+
+void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text,
+              float size, float spacing, glm::vec3 position)
+{
+    float width = 1.0f / 16.0f;
+    float height = 1.0f / 16.0f;
+
+    std::vector<float> vertices;
+    std::vector<float> texCoords;
+
+    for(size_t i = 0; i < text.size(); i++) {
+
+        int index = (int)text[i];
+        float offset = (size + spacing) * i;
+
+        float u = (float)(index % 16) / 16.0f;
+        float v = (float)(index / 16) / 16.0f;
+
+        vertices.insert(vertices.end(), {
+            offset + (-0.5f * size), 0.5f * size,
+            offset + (-0.5f * size), -0.5f * size,
+            offset + (0.5f * size), 0.5f * size,
+            offset + (0.5f * size), -0.5f * size,
+            offset + (0.5f * size), 0.5f * size,
+            offset + (-0.5f * size), -0.5f * size,
+        });
+        texCoords.insert(texCoords.end(), {
+            u, v,
+            u, v + height,
+            u + width, v,
+            u + width, v + height,
+            u + width, v,
+            u, v + height,
+        });
+    } // end of for loop
+
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, position);
+    program->SetModelMatrix(modelMatrix);
+
+    glUseProgram(program->programID);
+
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices.data());
+    glEnableVertexAttribArray(program->positionAttribute);
+
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords.data());
+    glEnableVertexAttribArray(program->texCoordAttribute);
+
+    glBindTexture(GL_TEXTURE_2D, fontTextureID);
+    glDrawArrays(GL_TRIANGLES, 0, (int)(text.size() * 6));
+
+    glDisableVertexAttribArray(program->positionAttribute);
+    glDisableVertexAttribArray(program->texCoordAttribute);
+}
 
 GLuint LoadTexture(const char* filePath) {
     int w, h, n;
@@ -96,23 +156,38 @@ void Initialize() {
     state.player->speed = 1.0f;
     state.player->textureID = LoadTexture("rocket.png");
     state.player->width = 0.73f;
+    state.player->type = PLAYER;
 
     state.platforms = new Entity[PLATFORM_COUNT];
+
+    // For this code to work, the non-safe platforms should appear before the
+    // landing platform.
+    // Specifically, this is needed if we collide with both the landing platform
+    // and a non-safe platform.
+    // The Entity object only records the first collision so we must check if
+    // the rocket hit a non-safe platform first.
 
     GLuint platformTextureID = LoadTexture("tnt_tile.png");
 
     state.platforms[0].textureID = platformTextureID;
     state.platforms[0].position = glm::vec3(-1, -3.75f, 0);
+    state.platforms[0].type = BOMB_TILE;
 
     state.platforms[1].textureID = platformTextureID;
     state.platforms[1].position = glm::vec3(0, -3.75f, 0);
+    state.platforms[1].type = BOMB_TILE;
 
-    state.platforms[2].textureID = platformTextureID;
+    GLuint landingTileTextureID = LoadTexture("landing.png");
+
+    state.platforms[2].textureID = landingTileTextureID;
     state.platforms[2].position = glm::vec3(1, -3.75f, 0);
+    state.platforms[2].type = LANDING_TILE;
 
-    for (int i = 0;  i < PLATFORM_COUNT; ++i) {
+    for (int i = 0; i < PLATFORM_COUNT; ++i) {
         state.platforms[i].Update(0, nullptr, 0);
     }
+
+    state.fontTextureID = LoadTexture("font1.png");
 }
 
 void ProcessInput() {
@@ -175,6 +250,18 @@ void Update() {
     while (deltaTime >= FIXED_TIMESTEP) {
         // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
         state.player->Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
+        bool hasCollided = state.player->collidedTop ||
+            state.player->collidedBottom ||
+            state.player->collidedRight ||
+            state.player->collidedLeft;
+        if (hasCollided) {
+            if (state.player->collidedBottom &&
+                state.player->collidedBottom->type == LANDING_TILE) {
+                state.mode = WON;
+            } else {
+                state.mode = LOST;
+            }
+        }
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
@@ -188,7 +275,17 @@ void Render() {
     }
 
     state.player->Render(&program);
-    
+
+    if (state.mode != PLAYING) {
+        std::string message;
+        if (state.mode == WON) {
+            message = "Mission successful";
+        } else {
+            message = "Mission failed";
+        }
+        DrawText(&program, state.fontTextureID, message, 0.5f, -0.25f, glm::vec3(0));
+    }
+
     SDL_GL_SwapWindow(displayWindow);
 }
 
@@ -202,10 +299,12 @@ int main(int argc, char* argv[]) {
     
     while (gameIsRunning) {
         ProcessInput();
-        Update();
-        Render();
+        if (state.mode == PLAYING) {
+            Update();
+            Render();
+        }
     }
-    
+
     Shutdown();
     return 0;
 }

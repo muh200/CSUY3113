@@ -13,10 +13,10 @@ Entity::Entity()
 
 void Entity::Update(float deltaTime, Entity *platforms, int platformCount)
 {
-    collidedTop = false;
-    collidedBottom = false;
-    collidedLeft = false;
-    collidedRight = false;
+    collidedTop = nullptr;
+    collidedBottom = nullptr;
+    collidedLeft = nullptr;
+    collidedRight = nullptr;
 
     if (animIndices != NULL) {
         if (glm::length(movement) != 0) {
@@ -50,6 +50,8 @@ void Entity::Update(float deltaTime, Entity *platforms, int platformCount)
     modelMatrix = glm::translate(modelMatrix, position);
 }
 
+// This function assumes that we can only collide horizontally
+// with one object at a time.
 void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 {
     for (int i = 0; i < objectCount; i++)
@@ -62,17 +64,20 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
             if (velocity.x > 0) {
                 position.x -= penetrationX;
                 velocity.x = 0;
-                collidedRight = true;
+                collidedRight = object;
             }
             else if (velocity.x < 0) {
                 position.x += penetrationX;
                 velocity.x = 0;
-                collidedLeft = true;
+                collidedLeft = object;
             }
+            return;
         }
     }
 }
 
+// This function assumes that we can only collide vertically
+// with one object at a time.
 void Entity::CheckCollisionsY(Entity *objects, int objectCount)
 {
     for (int i = 0; i < objectCount; i++)
@@ -85,13 +90,14 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount)
             if (velocity.y > 0) {
                 position.y -= penetrationY;
                 velocity.y = 0;
-                collidedTop = true;
+                collidedTop = object;
             }
             else if (velocity.y < 0) {
                 position.y += penetrationY;
                 velocity.y = 0;
-                collidedBottom = true;
+                collidedBottom = object;
             }
+            return;
         }
     }
 }
