@@ -17,12 +17,13 @@
 #include "Entity.h"
 
 #include <vector>
+#include <cassert>
 
 #define FIXED_TIMESTEP 0.0166666f
 float lastTicks = 0;
 float accumulator = 0.0f;
 
-#define PLATFORM_COUNT 3
+#define PLATFORM_COUNT 29
 
 enum GameMode { PLAYING, WON, LOST };
 
@@ -116,6 +117,15 @@ GLuint LoadTexture(const char* filePath) {
     return textureID;
 }
 
+void initializeEntities(Entity* start, Entity* end, glm::vec3 startPosition,
+                     glm::vec3 step, EntityType type, GLuint textureID) {
+    for (Entity* p = start; p != end; ++p) {
+        p->textureID = textureID;
+        p->position = startPosition;
+        p->type = type;
+        startPosition += step;
+    }
+}
 
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -150,7 +160,7 @@ void Initialize() {
     
     // Initialize Player
     state.player = new Entity();
-    state.player->position = glm::vec3(0);
+    state.player->position = glm::vec3(0, 3.75, 0);
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -0.05, 0);
     state.player->speed = 1.0f;
@@ -167,21 +177,77 @@ void Initialize() {
     // The Entity object only records the first collision so we must check if
     // the rocket hit a non-safe platform first.
 
-    GLuint platformTextureID = LoadTexture("tnt_tile.png");
+    GLuint bombTextureID = LoadTexture("tnt_tile.png");
 
-    state.platforms[0].textureID = platformTextureID;
-    state.platforms[0].position = glm::vec3(-1, -3.75f, 0);
-    state.platforms[0].type = BOMB_TILE;
+    Entity* currentPosition = state.platforms;
+    int numberOfTiles;
 
-    state.platforms[1].textureID = platformTextureID;
-    state.platforms[1].position = glm::vec3(0, -3.75f, 0);
-    state.platforms[1].type = BOMB_TILE;
+    numberOfTiles = 6;
+    initializeEntities(currentPosition,
+                       currentPosition + numberOfTiles,
+                       glm::vec3(-4.5, -3.25f, 0),
+                       glm::vec3(1, 0, 0),
+                       BOMB_TILE,
+                       bombTextureID);
+    currentPosition += numberOfTiles;
+
+    numberOfTiles = 2;
+    initializeEntities(currentPosition,
+                       currentPosition + numberOfTiles,
+                       glm::vec3(3.5, -3.25f, 0),
+                       glm::vec3(1, 0, 0),
+                       BOMB_TILE,
+                       bombTextureID);
+    currentPosition += numberOfTiles;
+
+    numberOfTiles = 7;
+    initializeEntities(currentPosition,
+                       currentPosition + numberOfTiles,
+                       glm::vec3(-4.5, -2.25f, 0),
+                       glm::vec3(0, 1, 0),
+                       BOMB_TILE,
+                       bombTextureID);
+    currentPosition += numberOfTiles;
+
+    numberOfTiles = 7;
+    initializeEntities(currentPosition,
+                       currentPosition + numberOfTiles,
+                       glm::vec3(4.5, -2.25f, 0),
+                       glm::vec3(0, 1, 0),
+                       BOMB_TILE,
+                       bombTextureID);
+    currentPosition += numberOfTiles;
+
+    numberOfTiles = 4;
+    initializeEntities(currentPosition,
+                       currentPosition + numberOfTiles,
+                       glm::vec3(-3.5, 1.25f, 0),
+                       glm::vec3(1, 0, 0),
+                       BOMB_TILE,
+                       bombTextureID);
+    currentPosition += numberOfTiles;
+
+    numberOfTiles = 1;
+    initializeEntities(currentPosition,
+                       currentPosition + numberOfTiles,
+                       glm::vec3(3.5, -0.25f, 0),
+                       glm::vec3(-1, 0, 0),
+                       BOMB_TILE,
+                       bombTextureID);
+    currentPosition += numberOfTiles;
 
     GLuint landingTileTextureID = LoadTexture("landing.png");
 
-    state.platforms[2].textureID = landingTileTextureID;
-    state.platforms[2].position = glm::vec3(1, -3.75f, 0);
-    state.platforms[2].type = LANDING_TILE;
+    numberOfTiles = 2;
+    initializeEntities(currentPosition,
+                       currentPosition + numberOfTiles,
+                       glm::vec3(1.5, -3.25f, 0),
+                       glm::vec3(1, 0, 0),
+                       LANDING_TILE,
+                       landingTileTextureID);
+    currentPosition += numberOfTiles;
+
+    assert(currentPosition - state.platforms == PLATFORM_COUNT);
 
     for (int i = 0; i < PLATFORM_COUNT; ++i) {
         state.platforms[i].Update(0, nullptr, 0);
