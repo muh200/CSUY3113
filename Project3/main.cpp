@@ -281,9 +281,9 @@ void Render() {
         if (state.mode == WON) {
             message = "Mission successful";
         } else {
-            message = "Mission failed";
+            message = "Mission failed!!!!";
         }
-        DrawText(&program, state.fontTextureID, message, 0.5f, -0.25f, glm::vec3(0));
+        DrawText(&program, state.fontTextureID, message, 0.5f, -0.25f, glm::vec3(-2.25, 0, 0));
     }
 
     SDL_GL_SwapWindow(displayWindow);
