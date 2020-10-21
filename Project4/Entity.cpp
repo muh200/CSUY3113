@@ -36,8 +36,11 @@ void Entity::Update(float deltaTime, Entity *platforms, int platformCount)
         }
     }
 
-    // moving left and right should change the acceleration, not the velocity
-    acceleration.x = movement.x * speed;
+    if (jump) {
+        jump = false;
+        velocity.y += jumpPower;
+    }
+    velocity.x = movement.x * speed;
     velocity += acceleration * deltaTime;
     
     position.y += velocity.y * deltaTime;

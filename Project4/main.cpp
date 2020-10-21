@@ -23,7 +23,7 @@
 float lastTicks = 0;
 float accumulator = 0.0f;
 
-#define PLATFORM_COUNT 29
+#define PLATFORM_COUNT 10
 
 enum GameMode { PLAYING, WON, LOST };
 
@@ -117,16 +117,6 @@ GLuint LoadTexture(const char* filePath) {
     return textureID;
 }
 
-void initializeEntities(Entity* start, Entity* end, glm::vec3 startPosition,
-                     glm::vec3 step, EntityType type, GLuint textureID) {
-    for (Entity* p = start; p != end; ++p) {
-        p->textureID = textureID;
-        p->position = startPosition;
-        p->type = type;
-        startPosition += step;
-    }
-}
-
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
     displayWindow = SDL_CreateWindow("Project 4", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
@@ -160,94 +150,25 @@ void Initialize() {
     
     // Initialize Player
     state.player = new Entity();
-    state.player->position = glm::vec3(0, 3.75, 0);
+    state.player->position = glm::vec3(0, -2.25, 0);
     state.player->movement = glm::vec3(0);
-    state.player->acceleration = glm::vec3(0, -0.05, 0);
-    state.player->speed = 1.0f;
-    state.player->textureID = LoadTexture("rocket.png");
-    state.player->width = 0.73f;
+    state.player->acceleration = glm::vec3(0, -9.8f, 0);
+    state.player->speed = 2.0f;
+    state.player->jumpPower = 8.0f;
+    state.player->textureID = LoadTexture("player.png");
+    state.player->width = 1.0f;
     state.player->type = PLAYER;
 
     state.platforms = new Entity[PLATFORM_COUNT];
 
-    // For this code to work, the non-safe platforms should appear before the
-    // landing platform.
-    // Specifically, this is needed if we collide with both the landing platform
-    // and a non-safe platform.
-    // The Entity object only records the first collision so we must check if
-    // the rocket hit a non-safe platform first.
+    GLuint platformTextureID = LoadTexture("platform.png");
 
-    GLuint bombTextureID = LoadTexture("tnt_tile.png");
-
-    Entity* currentPosition = state.platforms;
-    int numberOfTiles;
-
-    numberOfTiles = 6;
-    initializeEntities(currentPosition,
-                       currentPosition + numberOfTiles,
-                       glm::vec3(-4.5, -3.25f, 0),
-                       glm::vec3(1, 0, 0),
-                       BOMB_TILE,
-                       bombTextureID);
-    currentPosition += numberOfTiles;
-
-    numberOfTiles = 2;
-    initializeEntities(currentPosition,
-                       currentPosition + numberOfTiles,
-                       glm::vec3(3.5, -3.25f, 0),
-                       glm::vec3(1, 0, 0),
-                       BOMB_TILE,
-                       bombTextureID);
-    currentPosition += numberOfTiles;
-
-    numberOfTiles = 7;
-    initializeEntities(currentPosition,
-                       currentPosition + numberOfTiles,
-                       glm::vec3(-4.5, -2.25f, 0),
-                       glm::vec3(0, 1, 0),
-                       BOMB_TILE,
-                       bombTextureID);
-    currentPosition += numberOfTiles;
-
-    numberOfTiles = 7;
-    initializeEntities(currentPosition,
-                       currentPosition + numberOfTiles,
-                       glm::vec3(4.5, -2.25f, 0),
-                       glm::vec3(0, 1, 0),
-                       BOMB_TILE,
-                       bombTextureID);
-    currentPosition += numberOfTiles;
-
-    numberOfTiles = 4;
-    initializeEntities(currentPosition,
-                       currentPosition + numberOfTiles,
-                       glm::vec3(-3.5, 1.25f, 0),
-                       glm::vec3(1, 0, 0),
-                       BOMB_TILE,
-                       bombTextureID);
-    currentPosition += numberOfTiles;
-
-    numberOfTiles = 1;
-    initializeEntities(currentPosition,
-                       currentPosition + numberOfTiles,
-                       glm::vec3(3.5, -0.25f, 0),
-                       glm::vec3(-1, 0, 0),
-                       BOMB_TILE,
-                       bombTextureID);
-    currentPosition += numberOfTiles;
-
-    GLuint landingTileTextureID = LoadTexture("landing.png");
-
-    numberOfTiles = 2;
-    initializeEntities(currentPosition,
-                       currentPosition + numberOfTiles,
-                       glm::vec3(1.5, -3.25f, 0),
-                       glm::vec3(1, 0, 0),
-                       LANDING_TILE,
-                       landingTileTextureID);
-    currentPosition += numberOfTiles;
-
-    assert(currentPosition - state.platforms == PLATFORM_COUNT);
+    for (int i = 0; i < 10; ++i) {
+        state.platforms[i] = Entity();
+        state.platforms[i].type = PLATFORM;
+        state.platforms[i].position = glm::vec3(-4.5 + i, -3.25, 0);
+        state.platforms[i].textureID = platformTextureID;
+    }
 
     for (int i = 0; i < PLATFORM_COUNT; ++i) {
         state.platforms[i].Update(0, nullptr, 0);
@@ -270,16 +191,8 @@ void ProcessInput() {
                 
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
-                    case SDLK_LEFT:
-                        // Move the player left
-                        break;
-                        
-                    case SDLK_RIGHT:
-                        // Move the player right
-                        break;
-                        
                     case SDLK_SPACE:
-                        // Some sort of action
+                        state.player->jump = state.player->collidedBottom;
                         break;
                 }
                 break; // SDL_KEYDOWN
@@ -316,18 +229,6 @@ void Update() {
     while (deltaTime >= FIXED_TIMESTEP) {
         // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
         state.player->Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
-        bool hasCollided = state.player->collidedTop ||
-            state.player->collidedBottom ||
-            state.player->collidedRight ||
-            state.player->collidedLeft;
-        if (hasCollided) {
-            if (state.player->collidedBottom &&
-                state.player->collidedBottom->type == LANDING_TILE) {
-                state.mode = WON;
-            } else {
-                state.mode = LOST;
-            }
-        }
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;

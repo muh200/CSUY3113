@@ -11,7 +11,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 
-enum EntityType { PLAYER, BOMB_TILE, LANDING_TILE };
+enum EntityType { PLAYER, AI, PLATFORM };
 
 class Entity {
 public:
@@ -21,10 +21,13 @@ public:
     glm::vec3 movement;
     glm::vec3 acceleration;
     glm::vec3 velocity;
-    float speed;
+    float speed = 0;
 
     float width = 1;
     float height = 1;
+
+    bool jump = false;
+    float jumpPower = 0;
     
     GLuint textureID;
     
