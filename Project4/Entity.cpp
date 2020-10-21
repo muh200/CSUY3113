@@ -49,6 +49,9 @@ void Entity::Update(float deltaTime, Entity *platforms, int platformCount)
     position.x += velocity.x * deltaTime;
     CheckCollisionsX(platforms, platformCount);
 
+    position.x = glm::clamp(position.x, -5.0f + width/2, 5.0f - width/2);
+    position.y = glm::clamp(position.y, -3.75f + height/2, 3.75f - height/2);
+
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);
 }
