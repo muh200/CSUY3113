@@ -24,12 +24,14 @@ float lastTicks = 0;
 float accumulator = 0.0f;
 
 #define PLATFORM_COUNT 10
+#define AI_COUNT 3
 
 enum GameMode { PLAYING, WON, LOST };
 
 struct GameState {
-    Entity *player;
-    Entity *platforms;
+    Entity *player = nullptr;
+    Entity *platforms = nullptr;
+    Entity *enemies = nullptr;
     GameMode mode = PLAYING;
     GLuint fontTextureID;
 };
@@ -159,6 +161,18 @@ void Initialize() {
     state.player->width = 1.0f;
     state.player->type = PLAYER;
 
+    state.enemies = new Entity[AI_COUNT];
+
+    GLuint enemyTextureID = LoadTexture("enemy.png");
+
+    for (int i = 0; i < AI_COUNT; ++i) {
+        state.enemies[i] = Entity();
+        state.enemies[i].type = AI;
+        state.enemies[i].position = glm::vec3(2 * i, 0, 0);
+        state.enemies[i].textureID = enemyTextureID;
+        state.enemies[i].acceleration = glm::vec3(0, -9.8f, 0);
+    }
+
     state.platforms = new Entity[PLATFORM_COUNT];
 
     GLuint platformTextureID = LoadTexture("platform.png");
@@ -229,6 +243,9 @@ void Update() {
     while (deltaTime >= FIXED_TIMESTEP) {
         // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
         state.player->Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
+        for (int i = 0; i < AI_COUNT; ++i) {
+            state.enemies[i].Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
+        }
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
@@ -239,6 +256,10 @@ void Render() {
 
     for (int i = 0; i < PLATFORM_COUNT; ++i) {
         state.platforms[i].Render(&program);
+    }
+
+    for (int i = 0; i < AI_COUNT; ++i) {
+        state.enemies[i].Render(&program);
     }
 
     state.player->Render(&program);
