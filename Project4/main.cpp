@@ -167,8 +167,11 @@ void Initialize() {
 
     for (int i = 0; i < AI_COUNT; ++i) {
         state.enemies[i] = Entity();
-        state.enemies[i].type = AI;
+        state.enemies[i].type = ENEMY;
+        state.enemies[i].aiType = WALKER;
+        state.enemies[i].aiState = WALKING;
         state.enemies[i].position = glm::vec3(2 * i, 0, 0);
+        state.enemies[i].speed = 0.25f;
         state.enemies[i].textureID = enemyTextureID;
         state.enemies[i].acceleration = glm::vec3(0, -9.8f, 0);
     }
@@ -185,7 +188,7 @@ void Initialize() {
     }
 
     for (int i = 0; i < PLATFORM_COUNT; ++i) {
-        state.platforms[i].Update(0, nullptr, 0);
+        state.platforms[i].Update(0, nullptr, nullptr, 0);
     }
 
     state.fontTextureID = LoadTexture("font1.png");
@@ -242,9 +245,9 @@ void Update() {
     }
     while (deltaTime >= FIXED_TIMESTEP) {
         // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
-        state.player->Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
+        state.player->Update(FIXED_TIMESTEP, state.player, state.platforms, PLATFORM_COUNT);
         for (int i = 0; i < AI_COUNT; ++i) {
-            state.enemies[i].Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
+            state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.platforms, PLATFORM_COUNT);
         }
         deltaTime -= FIXED_TIMESTEP;
     }

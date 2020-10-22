@@ -11,12 +11,16 @@ Entity::Entity()
     modelMatrix = glm::mat4(1.0f);
 }
 
-void Entity::Update(float deltaTime, Entity *platforms, int platformCount)
+void Entity::Update(float deltaTime, Entity* player, Entity *platforms, int platformCount)
 {
     collidedTop = false;
     collidedBottom = false;
     collidedLeft = false;
     collidedRight = false;
+
+    if (type == ENEMY) {
+        AI(player);
+    }
 
     if (animIndices != NULL) {
         if (glm::length(movement) != 0) {
@@ -54,6 +58,27 @@ void Entity::Update(float deltaTime, Entity *platforms, int platformCount)
 
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);
+}
+
+void Entity::AI(Entity* player) {
+    switch (aiType) {
+        case WALKER:
+            AIWalker(player);
+            break;
+    }
+}
+
+
+void Entity::AIWalker(Entity* player) {
+    switch (aiState) {
+        case WALKING:
+            if (position.x < player->position.x) {
+                movement.x = 1;
+            } else {
+                movement.x = -1;
+            }
+            break;
+    }
 }
 
 void Entity::CheckCollisionsX(Entity *objects, int objectCount)

@@ -11,11 +11,15 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 
-enum EntityType { PLAYER, AI, PLATFORM };
+enum EntityType { PLAYER, ENEMY, PLATFORM };
+enum AIType { WALKER };
+enum AIState { WALKING };
 
 class Entity {
 public:
     EntityType type;
+    AIType aiType;
+    AIState aiState;
 
     glm::vec3 position;
     glm::vec3 movement;
@@ -52,10 +56,13 @@ public:
     
     Entity();
 
-    void Update(float deltaTime, Entity *platforms, int platformCount);
+    void Update(float deltaTime, Entity* player, Entity *platforms, int platformCount);
     void CheckCollisionsX(Entity *objects, int objectCount);
     void CheckCollisionsY(Entity *objects, int objectCount);
     bool CheckCollision(Entity* other);
     void Render(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
+
+    void AI(Entity* player);
+    void AIWalker(Entity* player);
 };
