@@ -45,10 +45,10 @@ public:
     int animCols = 0;
     int animRows = 0;
 
-    Entity *collidedTop = nullptr;
-    Entity *collidedBottom = nullptr;
-    Entity *collidedLeft = nullptr;
-    Entity *collidedRight = nullptr;
+    bool collidedTop = false;
+    bool collidedBottom = false;
+    bool collidedLeft = false;
+    bool collidedRight = false;
     
     Entity();
 
