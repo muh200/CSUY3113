@@ -154,7 +154,7 @@ void Initialize() {
     
     // Initialize Player
     state.player = new Entity();
-    state.player->position = glm::vec3(0, -2.25, 0);
+    state.player->position = glm::vec3(-4, -2.25, 0);
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -9.8f, 0);
     state.player->speed = 2.0f;
@@ -196,6 +196,7 @@ void Initialize() {
         state.enemies[i].aiState = WALKING;
         state.enemies[i].position = glm::vec3(2 * i, 0, 0);
         state.enemies[i].speed = 0.25f;
+        state.enemies[i].width = 0.60f;
         state.enemies[i].animCols = 4;
         state.enemies[i].animRows = 2;
         state.enemies[i].animTime = 0.20f;
@@ -289,6 +290,29 @@ void Update() {
         for (int i = 0; i < AI_COUNT; ++i) {
             state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.platforms, PLATFORM_COUNT);
         }
+
+        for (int i = 0; i < AI_COUNT; ++i) {
+            if (state.player->CheckCollision(&state.enemies[i])) {
+                if (state.player->position.y > state.enemies[i].position.y &&
+                    state.player->velocity.y < 0) {
+                    state.enemies[i].isActive = false;
+                } else {
+                    state.mode = LOST;
+                    return;
+                }
+            }
+        }
+
+        bool won = true;
+        for (int i = 0; i < AI_COUNT; ++i) {
+            if (state.enemies[i].isActive) won = false;
+        }
+
+        if (won) {
+            state.mode = WON;
+            return;
+        }
+
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
@@ -310,11 +334,11 @@ void Render() {
     if (state.mode != PLAYING) {
         std::string message;
         if (state.mode == WON) {
-            message = "Mission successful";
+            message = "You Win";
         } else {
-            message = "Mission failed!!!!";
+            message = "You Lose";
         }
-        DrawText(&program, state.fontTextureID, message, 0.5f, -0.25f, glm::vec3(-2.25, 0, 0));
+        DrawText(&program, state.fontTextureID, message, 0.5f, -0.25f, glm::vec3(-1.125, 0, 0));
     }
 
     SDL_GL_SwapWindow(displayWindow);

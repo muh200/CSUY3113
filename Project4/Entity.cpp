@@ -13,6 +13,8 @@ Entity::Entity()
 
 void Entity::Update(float deltaTime, Entity* player, Entity *platforms, int platformCount)
 {
+    if (!isActive) return;
+
     collidedTop = false;
     collidedBottom = false;
     collidedLeft = false;
@@ -136,6 +138,8 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount)
 
 bool Entity::CheckCollision(Entity* other)
 {
+    if (!isActive || !other->isActive) return false;
+
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) / 2.0f);
     float ydist = fabs(position.y - other->position.y) - ((height + other->height) / 2.0f);
 
@@ -170,6 +174,8 @@ void Entity::DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID
 }
 
 void Entity::Render(ShaderProgram *program) {
+    if (!isActive) return;
+
     program->SetModelMatrix(modelMatrix);
     
     if (animIndices != NULL) {

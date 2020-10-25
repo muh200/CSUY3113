@@ -21,6 +21,8 @@ public:
     AIType aiType;
     AIState aiState;
 
+    bool isActive = true;
+
     glm::vec3 position;
     glm::vec3 movement;
     glm::vec3 acceleration;
