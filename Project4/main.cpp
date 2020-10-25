@@ -18,6 +18,8 @@
 
 #include <vector>
 #include <cassert>
+#include <algorithm>
+#include <initializer_list>
 
 #define FIXED_TIMESTEP 0.0166666f
 float lastTicks = 0;
@@ -158,8 +160,30 @@ void Initialize() {
     state.player->speed = 2.0f;
     state.player->jumpPower = 8.0f;
     state.player->textureID = LoadTexture("player.png");
-    state.player->width = 1.0f;
+    state.player->animCols = 6;
+    state.player->animRows = 2;
+    state.player->animTime = 0.20f;
+    state.player->animFrames = 5;
+
+    state.player->animRight = new int[state.player->animFrames];
+    std::initializer_list animRight = {4, 0, 1, 2, 3};
+    assert(animRight.size() == (size_t)state.player->animFrames);
+    std::copy(animRight.begin(), animRight.end(), state.player->animRight);
+
+    state.player->animLeft = new int[state.player->animFrames];
+    std::initializer_list animLeft = {10, 6, 7, 8, 9};
+    assert(animLeft.size() == (size_t)state.player->animFrames);
+    std::copy(animLeft.begin(), animLeft.end(), state.player->animLeft);
+
+    state.player->animUp = new int[state.player->animFrames];
+    for (int i = 0; i < state.player->animFrames; i++) {
+        state.player->animUp[i] = 5;
+    }
+
+    state.player->width = 0.5f;
+    state.player->height = 0.8125f;
     state.player->type = PLAYER;
+    state.player->animIndices = state.player->animRight;
 
     state.enemies = new Entity[AI_COUNT];
 
@@ -172,6 +196,22 @@ void Initialize() {
         state.enemies[i].aiState = WALKING;
         state.enemies[i].position = glm::vec3(2 * i, 0, 0);
         state.enemies[i].speed = 0.25f;
+        state.enemies[i].animCols = 4;
+        state.enemies[i].animRows = 2;
+        state.enemies[i].animTime = 0.20f;
+        state.enemies[i].animFrames = 4;
+
+        state.enemies[i].animRight = new int[state.enemies[i].animFrames];
+        std::initializer_list animRight = {3, 0, 1, 2};
+        assert(animRight.size() == (size_t)state.enemies[i].animFrames);
+        std::copy(animRight.begin(), animRight.end(), state.enemies[i].animRight);
+
+        state.enemies[i].animLeft = new int[state.enemies[i].animFrames];
+        std::initializer_list animLeft = {7, 4, 5, 6};
+        assert(animLeft.size() == (size_t)state.enemies[i].animFrames);
+        std::copy(animLeft.begin(), animLeft.end(), state.enemies[i].animLeft);
+
+        state.enemies[i].animIndices =  state.enemies[i].animLeft;
         state.enemies[i].textureID = enemyTextureID;
         state.enemies[i].acceleration = glm::vec3(0, -9.8f, 0);
     }

@@ -70,12 +70,19 @@ void Entity::AI(Entity* player) {
 
 
 void Entity::AIWalker(Entity* player) {
+    const float walkingThreshold = 0.05f;
     switch (aiState) {
         case WALKING:
-            if (position.x < player->position.x) {
-                movement.x = 1;
+            if (fabs(position.x - player->position.x) > walkingThreshold) {
+                if (position.x < player->position.x) {
+                    movement.x = 1;
+                    animIndices = animRight;
+                } else if (position.x > player->position.x) {
+                    movement.x = -1;
+                    animIndices = animLeft;
+                }
             } else {
-                movement.x = -1;
+                movement.x = 0;
             }
             break;
     }
