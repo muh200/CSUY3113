@@ -12,8 +12,8 @@
 #include "ShaderProgram.h"
 
 enum EntityType { PLAYER, ENEMY, PLATFORM };
-enum AIType { WALKER, JUMPER };
-enum AIState { WALKING, JUMPING };
+enum AIType { WALKER, JUMPER, PATROLLER };
+enum AIState { WALKING, JUMPING, PATROLLING };
 
 class Entity {
 public:
@@ -65,7 +65,8 @@ public:
     void Render(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
 
-    void AI(Entity* player);
+    void AI(Entity* player, Entity *platforms, int platformCount);
     void AIWalker(Entity* player);
     void AIJumper(Entity* player);
+    void AIPatroller(Entity *platforms, int platformCount);
 };

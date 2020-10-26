@@ -25,7 +25,7 @@
 float lastTicks = 0;
 float accumulator = 0.0f;
 
-#define PLATFORM_COUNT 10
+#define PLATFORM_COUNT 13
 #define AI_COUNT 3
 
 enum GameMode { PLAYING, WON, LOST };
@@ -192,7 +192,6 @@ void Initialize() {
     for (int i = 0; i < AI_COUNT; ++i) {
         state.enemies[i] = Entity();
         state.enemies[i].type = ENEMY;
-        state.enemies[i].position = glm::vec3(2 * i, 0, 0);
         state.enemies[i].speed = 0.25f;
         state.enemies[i].width = 0.60f;
         state.enemies[i].animCols = 4;
@@ -217,20 +216,35 @@ void Initialize() {
 
     state.enemies[0].aiType = WALKER;
     state.enemies[0].aiState = WALKING;
+    state.enemies[0].position = glm::vec3(4, 0, 0);
 
     state.enemies[1].aiType = JUMPER;
     state.enemies[1].aiState = JUMPING;
     state.enemies[1].jumpPower = 5;
+    state.enemies[1].position = glm::vec3(2, 0, 0);
+
+    state.enemies[2].aiType = PATROLLER;
+    state.enemies[2].aiState = PATROLLING;
+    state.enemies[2].position = glm::vec3(0, 0, 0);
+    state.enemies[2].movement = glm::vec3(1, 0, 0);
+    state.enemies[2].animIndices = state.enemies[2].animRight;
 
     state.platforms = new Entity[PLATFORM_COUNT];
 
     GLuint platformTextureID = LoadTexture("platform.png");
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < PLATFORM_COUNT; ++i) {
         state.platforms[i] = Entity();
         state.platforms[i].type = PLATFORM;
-        state.platforms[i].position = glm::vec3(-4.5 + i, -3.25, 0);
         state.platforms[i].textureID = platformTextureID;
+    }
+
+    for (int i = 0; i < 10; ++i) {
+        state.platforms[i].position = glm::vec3(-4.5 + i, -3.25, 0);
+    }
+
+    for (int i = 0; i < 3; ++i) {
+        state.platforms[10 + i].position = glm::vec3(-2.0 + i, 0, 0);
     }
 
     for (int i = 0; i < PLATFORM_COUNT; ++i) {

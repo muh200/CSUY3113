@@ -55,7 +55,7 @@ void Entity::Update(float deltaTime, Entity* player, Entity *platforms, int plat
     // because of the jumping AI depends on collision flags which are reset
     // at the beginning of the method.
     if (type == ENEMY) {
-        AI(player);
+        AI(player, platforms, platformCount);
     }
 
     position.x = glm::clamp(position.x, -5.0f + width/2, 5.0f - width/2);
@@ -65,13 +65,16 @@ void Entity::Update(float deltaTime, Entity* player, Entity *platforms, int plat
     modelMatrix = glm::translate(modelMatrix, position);
 }
 
-void Entity::AI(Entity* player) {
+void Entity::AI(Entity* player, Entity *platforms, int platformCount) {
     switch (aiType) {
         case WALKER:
             AIWalker(player);
             break;
         case JUMPER:
             AIJumper(player);
+            break;
+        case PATROLLER:
+            AIPatroller(platforms, platformCount);
             break;
     }
 }
@@ -112,6 +115,28 @@ void Entity::AIJumper(Entity* player) {
         }
     } else {
         movement.x = 0;
+    }
+}
+
+void Entity::AIPatroller(Entity *platforms, int platformCount) {
+    glm::vec3 triggerPoint = position + glm::vec3(((movement.x > 0) ? 0.5 : -0.5), -1, 0);
+    for (int i = 0; i < platformCount; i++) {
+        const float leftX = platforms[i].position.x - platforms[i].width/2;
+        const float rightX = platforms[i].position.x + platforms[i].width/2;
+        const float upY = platforms[i].position.y + platforms[i].height/2;
+        const float downY = platforms[i].position.y - platforms[i].height/2;
+        if (triggerPoint.x < rightX &&
+            triggerPoint.x > leftX &&
+            triggerPoint.y < upY &&
+            triggerPoint.y > downY) {
+            return;
+        }
+    }
+    movement.x *= -1;
+    if (movement.x < 0) {
+        animIndices = animLeft;
+    } else {
+        animIndices = animRight;
     }
 }
 
