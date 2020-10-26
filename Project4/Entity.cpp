@@ -20,10 +20,6 @@ void Entity::Update(float deltaTime, Entity* player, Entity *platforms, int plat
     collidedLeft = false;
     collidedRight = false;
 
-    if (type == ENEMY) {
-        AI(player);
-    }
-
     if (animIndices != NULL) {
         if (glm::length(movement) != 0) {
             animTime += deltaTime;
@@ -55,6 +51,13 @@ void Entity::Update(float deltaTime, Entity* player, Entity *platforms, int plat
     position.x += velocity.x * deltaTime;
     CheckCollisionsX(platforms, platformCount);
 
+    // The reason that this is here rather than the top of the method is
+    // because of the jumping AI depends on collision flags which are reset
+    // at the beginning of the method.
+    if (type == ENEMY) {
+        AI(player);
+    }
+
     position.x = glm::clamp(position.x, -5.0f + width/2, 5.0f - width/2);
     position.y = glm::clamp(position.y, -3.75f + height/2, 3.75f - height/2);
 
@@ -67,26 +70,48 @@ void Entity::AI(Entity* player) {
         case WALKER:
             AIWalker(player);
             break;
+        case JUMPER:
+            AIJumper(player);
+            break;
     }
 }
 
 
 void Entity::AIWalker(Entity* player) {
     const float walkingThreshold = 0.05f;
-    switch (aiState) {
-        case WALKING:
-            if (fabs(position.x - player->position.x) > walkingThreshold) {
-                if (position.x < player->position.x) {
-                    movement.x = 1;
-                    animIndices = animRight;
-                } else if (position.x > player->position.x) {
-                    movement.x = -1;
-                    animIndices = animLeft;
-                }
-            } else {
-                movement.x = 0;
-            }
-            break;
+    // The enemy should only change direction if the player is past a certian
+    // distance from the player. Otherwise, we get flickering behavior when the
+    // player is directly above the enemy.
+    if (fabs(position.x - player->position.x) > walkingThreshold) {
+        if (position.x < player->position.x) {
+            movement.x = 1;
+            animIndices = animRight;
+        } else if (position.x > player->position.x) {
+            movement.x = -1;
+            animIndices = animLeft;
+        }
+    } else {
+        movement.x = 0;
+    }
+}
+
+void Entity::AIJumper(Entity* player) {
+    const float jumpingThreshold = 0.05f;
+    // The enemy should only change direction if the player is past a certian
+    // distance from the player. Otherwise, we get flickering behavior when the
+    // player is directly above the enemy.
+    if (fabs(position.x - player->position.x) > jumpingThreshold) {
+        if (position.x < player->position.x) {
+            movement.x = 1;
+            if (collidedBottom) jump = true;
+            animIndices = animRight;
+        } else if (position.x > player->position.x) {
+            movement.x = -1;
+            if (collidedBottom) jump = true;
+            animIndices = animLeft;
+        }
+    } else {
+        movement.x = 0;
     }
 }
 

@@ -192,8 +192,6 @@ void Initialize() {
     for (int i = 0; i < AI_COUNT; ++i) {
         state.enemies[i] = Entity();
         state.enemies[i].type = ENEMY;
-        state.enemies[i].aiType = WALKER;
-        state.enemies[i].aiState = WALKING;
         state.enemies[i].position = glm::vec3(2 * i, 0, 0);
         state.enemies[i].speed = 0.25f;
         state.enemies[i].width = 0.60f;
@@ -216,6 +214,13 @@ void Initialize() {
         state.enemies[i].textureID = enemyTextureID;
         state.enemies[i].acceleration = glm::vec3(0, -9.8f, 0);
     }
+
+    state.enemies[0].aiType = WALKER;
+    state.enemies[0].aiState = WALKING;
+
+    state.enemies[1].aiType = JUMPER;
+    state.enemies[1].aiState = JUMPING;
+    state.enemies[1].jumpPower = 5;
 
     state.platforms = new Entity[PLATFORM_COUNT];
 
