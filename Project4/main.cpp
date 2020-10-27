@@ -25,7 +25,7 @@
 float lastTicks = 0;
 float accumulator = 0.0f;
 
-#define PLATFORM_COUNT 13
+#define PLATFORM_COUNT 17
 #define AI_COUNT 3
 
 enum GameMode { PLAYING, WON, LOST };
@@ -216,16 +216,16 @@ void Initialize() {
 
     state.enemies[0].aiType = WALKER;
     state.enemies[0].aiState = WALKING;
-    state.enemies[0].position = glm::vec3(4, 0, 0);
+    state.enemies[0].position = glm::vec3(0, -3, 0);
 
     state.enemies[1].aiType = JUMPER;
     state.enemies[1].aiState = JUMPING;
     state.enemies[1].jumpPower = 5;
-    state.enemies[1].position = glm::vec3(2, 0, 0);
+    state.enemies[1].position = glm::vec3(4, 0, 0);
 
     state.enemies[2].aiType = PATROLLER;
     state.enemies[2].aiState = PATROLLING;
-    state.enemies[2].position = glm::vec3(0, 0, 0);
+    state.enemies[2].position = glm::vec3(-1, 2, 0);
     state.enemies[2].movement = glm::vec3(1, 0, 0);
     state.enemies[2].animIndices = state.enemies[2].animRight;
 
@@ -243,8 +243,12 @@ void Initialize() {
         state.platforms[i].position = glm::vec3(-4.5 + i, -3.25, 0);
     }
 
+    for (int i = 0; i < 4; ++i) {
+        state.platforms[10 + i].position = glm::vec3(-2.0 + i, 1.0, 0);
+    }
+
     for (int i = 0; i < 3; ++i) {
-        state.platforms[10 + i].position = glm::vec3(-2.0 + i, 0, 0);
+        state.platforms[14 + i].position = glm::vec3(2.5 + i, -2.25 + i, 0);
     }
 
     for (int i = 0; i < PLATFORM_COUNT; ++i) {
