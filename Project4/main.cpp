@@ -166,12 +166,12 @@ void Initialize() {
     state.player->animFrames = 5;
 
     state.player->animRight = new int[state.player->animFrames];
-    std::initializer_list animRight = {4, 0, 1, 2, 3};
+    std::initializer_list<int> animRight = {4, 0, 1, 2, 3};
     assert(animRight.size() == (size_t)state.player->animFrames);
     std::copy(animRight.begin(), animRight.end(), state.player->animRight);
 
     state.player->animLeft = new int[state.player->animFrames];
-    std::initializer_list animLeft = {10, 6, 7, 8, 9};
+    std::initializer_list<int> animLeft = {10, 6, 7, 8, 9};
     assert(animLeft.size() == (size_t)state.player->animFrames);
     std::copy(animLeft.begin(), animLeft.end(), state.player->animLeft);
 
@@ -200,12 +200,12 @@ void Initialize() {
         state.enemies[i].animFrames = 4;
 
         state.enemies[i].animRight = new int[state.enemies[i].animFrames];
-        std::initializer_list animRight = {3, 0, 1, 2};
+        std::initializer_list<int> animRight = {3, 0, 1, 2};
         assert(animRight.size() == (size_t)state.enemies[i].animFrames);
         std::copy(animRight.begin(), animRight.end(), state.enemies[i].animRight);
 
         state.enemies[i].animLeft = new int[state.enemies[i].animFrames];
-        std::initializer_list animLeft = {7, 4, 5, 6};
+        std::initializer_list<int> animLeft = {7, 4, 5, 6};
         assert(animLeft.size() == (size_t)state.enemies[i].animFrames);
         std::copy(animLeft.begin(), animLeft.end(), state.enemies[i].animLeft);
 
