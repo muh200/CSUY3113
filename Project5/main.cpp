@@ -11,11 +11,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-
 #include "Entity.h"
 #include "Map.h"
+#include "Util.h"
 
 #include <vector>
 #include <cassert>
@@ -56,81 +54,6 @@ bool gameIsRunning = true;
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 
-void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text,
-              float size, float spacing, glm::vec3 position)
-{
-    float width = 1.0f / 16.0f;
-    float height = 1.0f / 16.0f;
-
-    std::vector<float> vertices;
-    std::vector<float> texCoords;
-
-    for(size_t i = 0; i < text.size(); i++) {
-
-        int index = (int)text[i];
-        float offset = (size + spacing) * i;
-
-        float u = (float)(index % 16) / 16.0f;
-        float v = (float)(index / 16) / 16.0f;
-
-        vertices.insert(vertices.end(), {
-            offset + (-0.5f * size), 0.5f * size,
-            offset + (-0.5f * size), -0.5f * size,
-            offset + (0.5f * size), 0.5f * size,
-            offset + (0.5f * size), -0.5f * size,
-            offset + (0.5f * size), 0.5f * size,
-            offset + (-0.5f * size), -0.5f * size,
-        });
-        texCoords.insert(texCoords.end(), {
-            u, v,
-            u, v + height,
-            u + width, v,
-            u + width, v + height,
-            u + width, v,
-            u, v + height,
-        });
-    } // end of for loop
-
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, position);
-    program->SetModelMatrix(modelMatrix);
-
-    glUseProgram(program->programID);
-
-    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices.data());
-    glEnableVertexAttribArray(program->positionAttribute);
-
-    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords.data());
-    glEnableVertexAttribArray(program->texCoordAttribute);
-
-    glBindTexture(GL_TEXTURE_2D, fontTextureID);
-    glDrawArrays(GL_TRIANGLES, 0, (int)(text.size() * 6));
-
-    glDisableVertexAttribArray(program->positionAttribute);
-    glDisableVertexAttribArray(program->texCoordAttribute);
-}
-
-GLuint LoadTexture(const char* filePath) {
-    int w, h, n;
-    unsigned char* image = stbi_load(filePath, &w, &h, &n, STBI_rgb_alpha);
-    
-    if (image == NULL) {
-        std::cout << "Unable to load image. Make sure the path is correct\n";
-        assert(false);
-    }
-    
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    
-    stbi_image_free(image);
-    return textureID;
-}
-
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
     displayWindow = SDL_CreateWindow("Project 4", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
@@ -169,7 +92,7 @@ void Initialize() {
     state.player->acceleration = glm::vec3(0, -9.8f, 0);
     state.player->speed = 2.0f;
     state.player->jumpPower = 8.0f;
-    state.player->textureID = LoadTexture("player.png");
+    state.player->textureID = Util::LoadTexture("player.png");
     state.player->animCols = 6;
     state.player->animRows = 2;
     state.player->animTime = 0.20f;
@@ -197,7 +120,7 @@ void Initialize() {
 
     state.enemies = new Entity[AI_COUNT];
 
-    // GLuint enemyTextureID = LoadTexture("enemy.png");
+    // GLuint enemyTextureID = Util::LoadTexture("enemy.png");
 
     // for (int i = 0; i < AI_COUNT; ++i) {
     //     state.enemies[i] = Entity();
@@ -239,10 +162,10 @@ void Initialize() {
     // state.enemies[2].movement = glm::vec3(1, 0, 0);
     // state.enemies[2].animIndices = state.enemies[2].animRight;
 
-    GLuint mapTextureID = LoadTexture("tileset.png");
+    GLuint mapTextureID = Util::LoadTexture("tileset.png");
     state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 4, 1);
 
-    state.fontTextureID = LoadTexture("font1.png");
+    state.fontTextureID = Util::LoadTexture("font1.png");
 }
 
 void ProcessInput() {
@@ -351,7 +274,7 @@ void Render() {
         } else {
             message = "You Lose";
         }
-        DrawText(&program, state.fontTextureID, message, 0.5f, -0.25f, glm::vec3(-1.125, 0, 0));
+        Util::DrawText(&program, state.fontTextureID, message, 0.5f, -0.25f, glm::vec3(-1.125, 0, 0));
     }
 
     SDL_GL_SwapWindow(displayWindow);
