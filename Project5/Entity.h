@@ -1,3 +1,5 @@
+#pragma once
+
 #define GL_SILENCE_DEPRECATION
 
 #ifdef _WINDOWS
