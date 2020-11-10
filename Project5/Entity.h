@@ -59,9 +59,11 @@ public:
     
     Entity();
 
-    void Update(float deltaTime, Entity* player, Map *map);
+    void Update(float deltaTime, Entity *player, Entity *objects, int objectCount, Map *map);
     void CheckCollisionsX(Entity *objects, int objectCount);
     void CheckCollisionsY(Entity *objects, int objectCount);
+    void CheckCollisionsX(Map *map);
+    void CheckCollisionsY(Map *map);
     bool CheckCollision(Entity* other);
     void Render(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);

@@ -164,7 +164,7 @@ void Initialize() {
     
     // Initialize Player
     state.player = new Entity();
-    state.player->position = glm::vec3(-4, -2.25, 0);
+    state.player->position = glm::vec3(0, -2.25, 0);
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -9.8f, 0);
     state.player->speed = 2.0f;
@@ -296,9 +296,9 @@ void Update() {
     }
     while (deltaTime >= FIXED_TIMESTEP) {
         // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
-        state.player->Update(FIXED_TIMESTEP, state.player, state.map);
+        state.player->Update(FIXED_TIMESTEP, state.player, nullptr, 0, state.map);
         for (int i = 0; i < AI_COUNT; ++i) {
-            state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.map);
+            state.enemies[i].Update(FIXED_TIMESTEP, state.player, nullptr, 0, state.map);
         }
 
         for (int i = 0; i < AI_COUNT; ++i) {
@@ -326,10 +326,15 @@ void Update() {
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
+
+    viewMatrix = glm::mat4(1.0f);
+    viewMatrix = glm::translate(viewMatrix, glm::vec3(-state.player->position.x, 0, 0));
 }
 
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
+
+    program.SetViewMatrix(viewMatrix);
 
     state.map->Render(&program);
 

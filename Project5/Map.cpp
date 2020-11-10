@@ -77,3 +77,28 @@ void Map::Render(ShaderProgram *program)
     glDisableVertexAttribArray(program->positionAttribute);
     glDisableVertexAttribArray(program->texCoordAttribute);
 }
+bool Map::IsSolid(glm::vec3 position, float *penetration_x, float *penetration_y)
+{
+    *penetration_x = 0;
+    *penetration_y = 0;
+
+    if (position.x < left_bound || position.x > right_bound) return false;
+    if (position.y > top_bound || position.y < bottom_bound) return false;
+
+    int tile_x = floor((position.x + (tile_size / 2)) / tile_size);
+    int tile_y = -(ceil(position.y - (tile_size / 2))) / tile_size; // Our array counts up as Y goes down.
+
+    if (tile_x < 0 || tile_x >= width) return false;
+    if (tile_y < 0 || tile_y >= height) return false;
+
+    int tile = levelData[tile_y * width + tile_x];
+    if (tile == 0) return false;
+
+    float tile_center_x = (tile_x * tile_size);
+    float tile_center_y = -(tile_y * tile_size);
+
+    *penetration_x = (tile_size / 2) - fabs(position.x - tile_center_x);
+    *penetration_y = (tile_size / 2) - fabs(position.y - tile_center_y);
+
+    return true;
+}
