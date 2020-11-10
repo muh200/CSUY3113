@@ -10,6 +10,7 @@
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
+#include "Map.h"
 
 enum EntityType { PLAYER, ENEMY, PLATFORM };
 enum AIType { WALKER, JUMPER, PATROLLER };
@@ -58,7 +59,7 @@ public:
     
     Entity();
 
-    void Update(float deltaTime, Entity* player, Entity *platforms, int platformCount);
+    void Update(float deltaTime, Entity* player, Map *map);
     void CheckCollisionsX(Entity *objects, int objectCount);
     void CheckCollisionsY(Entity *objects, int objectCount);
     bool CheckCollision(Entity* other);

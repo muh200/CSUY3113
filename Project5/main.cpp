@@ -15,6 +15,7 @@
 #include "stb_image.h"
 
 #include "Entity.h"
+#include "Map.h"
 
 #include <vector>
 #include <cassert>
@@ -25,20 +26,29 @@
 float lastTicks = 0;
 float accumulator = 0.0f;
 
-#define PLATFORM_COUNT 17
+#define LEVEL1_WIDTH 14
+#define LEVEL1_HEIGHT 5
 #define AI_COUNT 0
 
 enum GameMode { PLAYING, WON, LOST };
 
 struct GameState {
     Entity *player = nullptr;
-    Entity *platforms = nullptr;
+    Map *map = nullptr;
     Entity *enemies = nullptr;
     GameMode mode = PLAYING;
     GLuint fontTextureID;
 };
 
 GameState state;
+
+unsigned int level1_data[] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2,
+};
 
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
@@ -229,31 +239,8 @@ void Initialize() {
     // state.enemies[2].movement = glm::vec3(1, 0, 0);
     // state.enemies[2].animIndices = state.enemies[2].animRight;
 
-    state.platforms = new Entity[PLATFORM_COUNT];
-
-    GLuint platformTextureID = LoadTexture("platform.png");
-
-    for (int i = 0; i < PLATFORM_COUNT; ++i) {
-        state.platforms[i] = Entity();
-        state.platforms[i].type = PLATFORM;
-        state.platforms[i].textureID = platformTextureID;
-    }
-
-    for (int i = 0; i < 10; ++i) {
-        state.platforms[i].position = glm::vec3(-4.5 + i, -3.25, 0);
-    }
-
-    for (int i = 0; i < 4; ++i) {
-        state.platforms[10 + i].position = glm::vec3(-2.0 + i, 1.0, 0);
-    }
-
-    for (int i = 0; i < 3; ++i) {
-        state.platforms[14 + i].position = glm::vec3(2.5 + i, -2.25 + i, 0);
-    }
-
-    for (int i = 0; i < PLATFORM_COUNT; ++i) {
-        state.platforms[i].Update(0, nullptr, nullptr, 0);
-    }
+    GLuint mapTextureID = LoadTexture("tileset.png");
+    state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 4, 1);
 
     state.fontTextureID = LoadTexture("font1.png");
 }
@@ -309,9 +296,9 @@ void Update() {
     }
     while (deltaTime >= FIXED_TIMESTEP) {
         // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
-        state.player->Update(FIXED_TIMESTEP, state.player, state.platforms, PLATFORM_COUNT);
+        state.player->Update(FIXED_TIMESTEP, state.player, state.map);
         for (int i = 0; i < AI_COUNT; ++i) {
-            state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.platforms, PLATFORM_COUNT);
+            state.enemies[i].Update(FIXED_TIMESTEP, state.player, state.map);
         }
 
         for (int i = 0; i < AI_COUNT; ++i) {
@@ -344,9 +331,7 @@ void Update() {
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    for (int i = 0; i < PLATFORM_COUNT; ++i) {
-        state.platforms[i].Render(&program);
-    }
+    state.map->Render(&program);
 
     for (int i = 0; i < AI_COUNT; ++i) {
         state.enemies[i].Render(&program);

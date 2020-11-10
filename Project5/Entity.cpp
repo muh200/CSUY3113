@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "Map.h"
 
 Entity::Entity()
 {
@@ -11,7 +12,7 @@ Entity::Entity()
     modelMatrix = glm::mat4(1.0f);
 }
 
-void Entity::Update(float deltaTime, Entity* player, Entity *platforms, int platformCount)
+void Entity::Update(float deltaTime, Entity* player, Map *map)
 {
     if (!isActive) return;
 
@@ -46,17 +47,17 @@ void Entity::Update(float deltaTime, Entity* player, Entity *platforms, int plat
     velocity += acceleration * deltaTime;
     
     position.y += velocity.y * deltaTime;
-    CheckCollisionsY(platforms, platformCount);
+    // CheckCollisionsY(platforms, platformCount);
 
     position.x += velocity.x * deltaTime;
-    CheckCollisionsX(platforms, platformCount);
+    // CheckCollisionsX(platforms, platformCount);
 
     // The reason that this is here rather than the top of the method is
     // because of the jumping AI depends on collision flags which are reset
     // at the beginning of the method.
-    if (type == ENEMY) {
-        AI(player, platforms, platformCount);
-    }
+    // if (type == ENEMY) {
+    //     AI(player, platforms, platformCount);
+    // }
 
     position.x = glm::clamp(position.x, -5.0f + width/2, 5.0f - width/2);
 
