@@ -17,6 +17,7 @@
 
 #include "Scene.h"
 #include "Level1.h"
+#include "Level2.h"
 
 #include <vector>
 #include <cassert>
@@ -34,6 +35,7 @@ Scene *scenes[2];
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
+int lives = 3;
 
 void SwitchToScene(Scene *scene) {
     currentScene = scene;
@@ -69,7 +71,7 @@ void Initialize() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     scenes[0] = new Level1();
-    scenes[1] = new Level1();
+    scenes[1] = new Level2();
 
     currentScene = scenes[0];
 

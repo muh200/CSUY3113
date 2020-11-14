@@ -1,18 +1,18 @@
-#include "Level1.h"
+#include "Level2.h"
 
-#define LEVEL1_AI_COUNT 1
-#define LEVEL1_WIDTH 14
-#define LEVEL1_HEIGHT 5
+#define LEVEL2_AI_COUNT 1
+#define LEVEL2_WIDTH 14
+#define LEVEL2_HEIGHT 5
 
-unsigned int level1_data[] = {
+unsigned int level2_data[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2,
+    3, 3, 3, 3, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2,
 };
 
-void Level1::Initialize() {
+void Level2::Initialize() {
     state.player = new Entity();
     state.player->position = glm::vec3(0, -2.25, 0);
     state.player->movement = glm::vec3(0);
@@ -33,11 +33,11 @@ void Level1::Initialize() {
     state.player->type = PLAYER;
     state.player->animIndices = state.player->animRight;
 
-    state.enemies = new Entity[LEVEL1_AI_COUNT];
+    state.enemies = new Entity[LEVEL2_AI_COUNT];
 
     GLuint enemyTextureID = Util::LoadTexture("enemy.png");
 
-    for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
+    for (int i = 0; i < LEVEL2_AI_COUNT; ++i) {
         state.enemies[i] = Entity();
         state.enemies[i].type = ENEMY;
         state.enemies[i].speed = 0.25f;
@@ -61,25 +61,25 @@ void Level1::Initialize() {
     state.enemies[0].animIndices = state.enemies[0].animRight;
 
     GLuint mapTextureID = Util::LoadTexture("tileset.png");
-    state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 4, 1);
+    state.map = new Map(LEVEL2_WIDTH, LEVEL2_HEIGHT, level2_data, mapTextureID, 1.0f, 4, 1);
     state.enemies[0].position = state.map->tileToCoord(7, 3);
 
     fontTextureID = Util::LoadTexture("font1.png");
 }
 
-void Level1::Update(float deltaTime) {
+void Level2::Update(float deltaTime) {
     state.player->Update(deltaTime, state.player, nullptr, 0, state.map);
 
     if (state.player->position.x >= state.map->tileToCoord(12, 2).x) {
-        state.nextScene = 1;
+        state.nextScene = 2;
     }
 
-    for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
+    for (int i = 0; i < LEVEL2_AI_COUNT; ++i) {
         state.enemies[i].Update(deltaTime, state.player, nullptr, 0, state.map);
     }
 
     bool lost = state.player->position.y < -3.75;
-    for (int i = 0; i < LEVEL1_AI_COUNT && !lost; ++i) {
+    for (int i = 0; i < LEVEL2_AI_COUNT && !lost; ++i) {
         if (state.player->CheckCollision(&state.enemies[i])) {
             if (state.player->position.y > state.enemies[i].position.y &&
                 state.player->velocity.y < 0) {
@@ -96,10 +96,10 @@ void Level1::Update(float deltaTime) {
     }
 }
 
-void Level1::Render(ShaderProgram *program) {
+void Level2::Render(ShaderProgram *program) {
     state.map->Render(program);
 
-    for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
+    for (int i = 0; i < LEVEL2_AI_COUNT; ++i) {
         state.enemies[i].Render(program);
     }
 

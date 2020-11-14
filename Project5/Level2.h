@@ -4,7 +4,7 @@
 
 extern int lives;
 
-class Level1 : public Scene {
+class Level2 : public Scene {
 public:
     void Initialize() override;
     void Update(float deltaTime) override;
