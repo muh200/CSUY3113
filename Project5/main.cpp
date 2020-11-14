@@ -21,7 +21,6 @@
 #include <vector>
 #include <cassert>
 #include <algorithm>
-#include <initializer_list>
 
 #define FIXED_TIMESTEP 0.0166666f
 float lastTicks = 0;
@@ -128,7 +127,7 @@ void Update() {
     }
     while (deltaTime >= FIXED_TIMESTEP) {
         // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
-        currentScene->Update(deltaTime);
+        currentScene->Update(FIXED_TIMESTEP);
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
@@ -158,10 +157,8 @@ int main(int argc, char* argv[]) {
     while (gameIsRunning) {
         ProcessInput();
         Update();
-
-        if (currentScene->state.nextScene >= 0) SwitchToScene(scenes[currentScene->state.nextScene]);
-
         Render();
+        if (currentScene->state.nextScene >= 0) SwitchToScene(scenes[currentScene->state.nextScene]);
     }
 
     Shutdown();

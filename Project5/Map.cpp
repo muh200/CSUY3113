@@ -77,6 +77,11 @@ void Map::Render(ShaderProgram *program)
     glDisableVertexAttribArray(program->positionAttribute);
     glDisableVertexAttribArray(program->texCoordAttribute);
 }
+
+glm::vec3 Map::tileToCoord(int tile_x, int tile_y) const {
+    return glm::vec3(tile_x * tile_size, tile_y * tile_size, 0);
+}
+
 bool Map::IsSolid(glm::vec3 position, float *penetration_x, float *penetration_y)
 {
     *penetration_x = 0;

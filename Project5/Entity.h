@@ -70,8 +70,8 @@ public:
     void Render(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
 
-    void AI(Entity* player, Entity *platforms, int platformCount);
+    void AI(Entity* player, Map* map);
     void AIWalker(Entity* player);
     void AIJumper(Entity* player);
-    void AIPatroller(Entity *platforms, int platformCount);
+    void AIPatroller(Map* map);
 };

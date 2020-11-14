@@ -57,15 +57,15 @@ void Entity::Update(float deltaTime, Entity *player, Entity *objects, int object
     // The reason that this is here rather than the top of the method is
     // because of the jumping AI depends on collision flags which are reset
     // at the beginning of the method.
-    // if (type == ENEMY) {
-    //     AI(player, platforms, platformCount);
-    // }
+    if (type == ENEMY) {
+        AI(player, map);
+    }
 
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);
 }
 
-void Entity::AI(Entity* player, Entity *platforms, int platformCount) {
+void Entity::AI(Entity* player, Map* map) {
     switch (aiType) {
         case WALKER:
             AIWalker(player);
@@ -74,7 +74,7 @@ void Entity::AI(Entity* player, Entity *platforms, int platformCount) {
             AIJumper(player);
             break;
         case PATROLLER:
-            AIPatroller(platforms, platformCount);
+            AIPatroller(map);
             break;
     }
 }
@@ -118,25 +118,16 @@ void Entity::AIJumper(Entity* player) {
     }
 }
 
-void Entity::AIPatroller(Entity *platforms, int platformCount) {
+void Entity::AIPatroller(Map* map) {
     glm::vec3 triggerPoint = position + glm::vec3(((movement.x > 0) ? 0.5 : -0.5), -1, 0);
-    for (int i = 0; i < platformCount; i++) {
-        const float leftX = platforms[i].position.x - platforms[i].width/2;
-        const float rightX = platforms[i].position.x + platforms[i].width/2;
-        const float upY = platforms[i].position.y + platforms[i].height/2;
-        const float downY = platforms[i].position.y - platforms[i].height/2;
-        if (triggerPoint.x < rightX &&
-            triggerPoint.x > leftX &&
-            triggerPoint.y < upY &&
-            triggerPoint.y > downY) {
-            return;
+    float x, y;
+    if (!map->IsSolid(triggerPoint, &x, &y) || collidedLeft || collidedRight) {
+        movement.x *= -1;
+        if (movement.x < 0) {
+            animIndices = animLeft;
+        } else {
+            animIndices = animRight;
         }
-    }
-    movement.x *= -1;
-    if (movement.x < 0) {
-        animIndices = animLeft;
-    } else {
-        animIndices = animRight;
     }
 }
 
