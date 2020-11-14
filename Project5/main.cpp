@@ -31,7 +31,7 @@ SDL_Window* displayWindow;
 bool gameIsRunning = true;
 
 Scene *currentScene = nullptr;
-Scene *scenes[1];
+Scene *scenes[2];
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
@@ -70,6 +70,7 @@ void Initialize() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     scenes[0] = new Level1();
+    scenes[1] = new Level1();
 
     currentScene = scenes[0];
 
@@ -157,6 +158,9 @@ int main(int argc, char* argv[]) {
     while (gameIsRunning) {
         ProcessInput();
         Update();
+
+        if (currentScene->state.nextScene >= 0) SwitchToScene(scenes[currentScene->state.nextScene]);
+
         Render();
     }
 

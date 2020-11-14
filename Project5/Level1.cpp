@@ -95,6 +95,11 @@ void Level1::Initialize() {
 
 void Level1::Update(float deltaTime) {
     state.player->Update(deltaTime, state.player, nullptr, 0, state.map);
+
+    if (state.player->position.x >= 10) {
+        state.nextScene = 1;
+    }
+
     for (int i = 0; i < AI_COUNT; ++i) {
         state.enemies[i].Update(deltaTime, state.player, nullptr, 0, state.map);
     }
