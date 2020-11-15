@@ -6,10 +6,10 @@
 
 unsigned int level2_data[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 
 void Level2::Initialize() {
@@ -55,14 +55,15 @@ void Level2::Initialize() {
         state.enemies[i].acceleration = glm::vec3(0, -9.8f, 0);
     }
 
-    state.enemies[0].aiType = PATROLLER;
-    state.enemies[0].aiState = PATROLLING;
-    state.enemies[0].movement = glm::vec3(1, 0, 0);
-    state.enemies[0].animIndices = state.enemies[0].animRight;
+    state.enemies[0].aiType = JUMPER;
+    state.enemies[0].aiState = JUMPING;
+    state.enemies[0].jumpPower = 5;
+    state.enemies[0].movement = glm::vec3(-1, 0, 0);
+    state.enemies[0].animIndices = state.enemies[0].animLeft;
 
     GLuint mapTextureID = Util::LoadTexture("tileset.png");
     state.map = new Map(LEVEL2_WIDTH, LEVEL2_HEIGHT, level2_data, mapTextureID, 1.0f, 2, 1);
-    state.enemies[0].position = state.map->tileToCoord(7, 3);
+    state.enemies[0].position = state.map->tileToCoord(7, 2);
 
     fontTextureID = Util::LoadTexture("font1.png");
 }
@@ -70,7 +71,7 @@ void Level2::Initialize() {
 void Level2::Update(float deltaTime) {
     state.player->Update(deltaTime, state.player, nullptr, 0, state.map);
 
-    if (state.player->position.x >= state.map->tileToCoord(12, 2).x) {
+    if (state.player->position.x >= state.map->tileToCoord(LEVEL2_WIDTH - 2, 0).x) {
         state.nextScene = 2;
         return;
     }
