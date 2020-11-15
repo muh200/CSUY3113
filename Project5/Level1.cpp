@@ -8,8 +8,8 @@ unsigned int level1_data[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2,
+    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 
 void Level1::Initialize() {
@@ -61,7 +61,7 @@ void Level1::Initialize() {
     state.enemies[0].animIndices = state.enemies[0].animRight;
 
     GLuint mapTextureID = Util::LoadTexture("tileset.png");
-    state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 4, 1);
+    state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 2, 1);
     state.enemies[0].position = state.map->tileToCoord(7, 3);
 
     fontTextureID = Util::LoadTexture("font1.png");
