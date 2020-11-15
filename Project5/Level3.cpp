@@ -5,11 +5,11 @@
 #define LEVEL3_HEIGHT 5
 
 unsigned int level3_data[] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 
 void Level3::Initialize() {
@@ -70,7 +70,7 @@ void Level3::Initialize() {
 void Level3::Update(float deltaTime) {
     state.player->Update(deltaTime, state.player, nullptr, 0, state.map);
 
-    if (state.player->position.x >= state.map->tileToCoord(12, 2).x) {
+    if (state.player->position.x >= state.map->tileToCoord(LEVEL3_WIDTH - 2, 0).x) {
         state.nextScene = 3;
         return;
     }
