@@ -19,6 +19,7 @@
 #include "Scene.h"
 #include "Level1.h"
 #include "Level2.h"
+#include "Level3.h"
 #include "EndScreen.h"
 #include "MenuScreen.h"
 
@@ -34,7 +35,7 @@ SDL_Window* displayWindow;
 bool gameIsRunning = true;
 
 Scene *currentScene = nullptr;
-Scene *scenes[5];
+Scene *scenes[6];
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
@@ -78,11 +79,12 @@ void Initialize() {
 
     scenes[0] = new Level1();
     scenes[1] = new Level2();
-    scenes[2] = new EndScreen("You won!");
-    scenes[3] = new EndScreen("You lost");
-    scenes[4] = new MenuScreen();
+    scenes[2] = new Level3();
+    scenes[3] = new EndScreen("You won!");
+    scenes[4] = new EndScreen("You lost");
+    scenes[5] = new MenuScreen();
 
-    currentScene = scenes[4];
+    currentScene = scenes[5];
 
     SwitchToScene(currentScene);
 
