@@ -18,6 +18,7 @@
 #include "Scene.h"
 #include "Level1.h"
 #include "Level2.h"
+#include "EndScreen.h"
 
 #include <vector>
 #include <cassert>
@@ -31,7 +32,7 @@ SDL_Window* displayWindow;
 bool gameIsRunning = true;
 
 Scene *currentScene = nullptr;
-Scene *scenes[2];
+Scene *scenes[4];
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
@@ -72,6 +73,8 @@ void Initialize() {
 
     scenes[0] = new Level1();
     scenes[1] = new Level2();
+    scenes[2] = new EndScreen("You won!");
+    scenes[3] = new EndScreen("You lost");
 
     currentScene = scenes[0];
 
@@ -79,43 +82,7 @@ void Initialize() {
 }
 
 void ProcessInput() {
-    
-    currentScene->state.player->movement = glm::vec3(0);
-    
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        switch (event.type) {
-            case SDL_QUIT:
-            case SDL_WINDOWEVENT_CLOSE:
-                gameIsRunning = false;
-                break;
-                
-            case SDL_KEYDOWN:
-                switch (event.key.keysym.sym) {
-                    case SDLK_SPACE:
-                        currentScene->state.player->jump = currentScene->state.player->collidedBottom;
-                        break;
-                }
-                break; // SDL_KEYDOWN
-        }
-    }
-    
-    const Uint8 *keys = SDL_GetKeyboardState(NULL);
-
-    if (keys[SDL_SCANCODE_LEFT]) {
-        currentScene->state.player->movement.x = -1.0f;
-        currentScene->state.player->animIndices = currentScene->state.player->animLeft;
-    }
-    else if (keys[SDL_SCANCODE_RIGHT]) {
-        currentScene->state.player->movement.x = 1.0f;
-        currentScene->state.player->animIndices = currentScene->state.player->animRight;
-    }
-    
-
-    if (glm::length(currentScene->state.player->movement) > 1.0f) {
-        currentScene->state.player->movement = glm::normalize(currentScene->state.player->movement);
-    }
-
+    currentScene->ProcessInput();
 }
 
 void Update() {
@@ -135,7 +102,9 @@ void Update() {
     accumulator = deltaTime;
 
     viewMatrix = glm::mat4(1.0f);
-    viewMatrix = glm::translate(viewMatrix, glm::vec3(-currentScene->state.player->position.x, 0, 0));
+    if (currentScene->state.player) {
+        viewMatrix = glm::translate(viewMatrix, glm::vec3(-currentScene->state.player->position.x, 0, 0));
+    }
 }
 
 void Render() {

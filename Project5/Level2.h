@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Scene.h"
+#include "Level.h"
 
 extern int lives;
 
-class Level2 : public Scene {
+class Level2 : public Level {
 public:
     void Initialize() override;
     void Update(float deltaTime) override;

@@ -72,6 +72,7 @@ void Level2::Update(float deltaTime) {
 
     if (state.player->position.x >= state.map->tileToCoord(12, 2).x) {
         state.nextScene = 2;
+        return;
     }
 
     for (int i = 0; i < LEVEL2_AI_COUNT; ++i) {
@@ -92,6 +93,10 @@ void Level2::Update(float deltaTime) {
 
     if (lost) {
         --lives;
+        if (lives == 0) {
+            state.nextScene = 3;
+            return;
+        }
         state.player->position = glm::vec3(0, -2.25, 0);
     }
 }

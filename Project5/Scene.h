@@ -15,6 +15,8 @@
 #include "Entity.h"
 #include "Map.h"
 
+extern bool gameIsRunning;
+
 struct GameState {
     Map *map;
     Entity *player;
@@ -26,6 +28,7 @@ class Scene {
 public:
     GameState state;
     virtual void Initialize() = 0;
+    virtual void ProcessInput() = 0;
     virtual void Update(float deltaTime) = 0;
     virtual void Render(ShaderProgram *program) = 0;
 };
