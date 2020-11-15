@@ -15,6 +15,9 @@ void Level::ProcessInput() {
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
                         state.player->jump = state.player->collidedBottom;
+                        if (state.player->jump) {
+                            Mix_PlayChannel(-1, jumpSound, 0);
+                        }
                         break;
                 }
                 break; // SDL_KEYDOWN

@@ -7,6 +7,7 @@
 #define GL_GLEXT_PROTOTYPES 1
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include <SDL_mixer.h>
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
@@ -39,13 +40,16 @@ ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 int lives = 3;
 
+Mix_Music *music = nullptr;
+Mix_Chunk *jumpSound = nullptr;
+
 void SwitchToScene(Scene *scene) {
     currentScene = scene;
     currentScene->Initialize();
 }
 
 void Initialize() {
-    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     displayWindow = SDL_CreateWindow("Project 4", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
     SDL_GL_MakeCurrent(displayWindow, context);
@@ -81,6 +85,11 @@ void Initialize() {
     currentScene = scenes[4];
 
     SwitchToScene(currentScene);
+
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+    music = Mix_LoadMUS("music.mp3");
+    jumpSound = Mix_LoadWAV("jump.wav");
+    Mix_PlayMusic(music, -1);
 }
 
 void ProcessInput() {
@@ -121,6 +130,9 @@ void Render() {
 
 
 void Shutdown() {
+    Mix_FreeMusic(music);
+    Mix_FreeChunk(jumpSound);
+
     SDL_Quit();
 }
 
