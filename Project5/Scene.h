@@ -18,9 +18,9 @@
 extern bool gameIsRunning;
 
 struct GameState {
-    Map *map;
-    Entity *player;
-    Entity *enemies;
+    Map *map = nullptr;
+    Entity *player = nullptr;
+    Entity *enemies = nullptr;
     int nextScene = -1;
 };
 
