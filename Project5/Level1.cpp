@@ -1,15 +1,15 @@
 #include "Level1.h"
 
-#define LEVEL1_AI_COUNT 1
-#define LEVEL1_WIDTH 14
+#define LEVEL1_AI_COUNT 2
+#define LEVEL1_WIDTH 17
 #define LEVEL1_HEIGHT 5
 
 unsigned int level1_data[] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1,
+    1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
 };
 
 void Level1::Initialize() {
@@ -53,16 +53,18 @@ void Level1::Initialize() {
         state.enemies[i].animIndices = state.enemies[i].animLeft;
         state.enemies[i].textureID = enemyTextureID;
         state.enemies[i].acceleration = glm::vec3(0, -9.8f, 0);
+
+        state.enemies[i].aiType = PATROLLER;
+        state.enemies[i].aiState = PATROLLING;
+        state.enemies[i].movement = glm::vec3(1, 0, 0);
+        state.enemies[i].animIndices = state.enemies[0].animRight;
     }
 
-    state.enemies[0].aiType = PATROLLER;
-    state.enemies[0].aiState = PATROLLING;
-    state.enemies[0].movement = glm::vec3(1, 0, 0);
-    state.enemies[0].animIndices = state.enemies[0].animRight;
 
     GLuint mapTextureID = Util::LoadTexture("tileset.png");
     state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 2, 1);
     state.enemies[0].position = state.map->tileToCoord(7, 3);
+    state.enemies[1].position = state.map->tileToCoord(12, 1);
 
     fontTextureID = Util::LoadTexture("font1.png");
 }
@@ -70,7 +72,7 @@ void Level1::Initialize() {
 void Level1::Update(float deltaTime) {
     state.player->Update(deltaTime, state.player, nullptr, 0, state.map);
 
-    if (state.player->position.x >= state.map->tileToCoord(12, 2).x) {
+    if (state.player->position.x >= state.map->tileToCoord(LEVEL1_WIDTH - 2, 0).x) {
         state.nextScene = 1;
         return;
     }
