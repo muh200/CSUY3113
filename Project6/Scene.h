@@ -17,16 +17,9 @@
 
 extern bool gameIsRunning;
 
-struct GameState {
-    Map *map = nullptr;
-    Entity *player = nullptr;
-    Entity *enemies = nullptr;
-    int nextScene = -1;
-};
-
 class Scene {
 public:
-    GameState state;
+    int nextScene = -1;
     virtual void Initialize() = 0;
     virtual void ProcessInput() = 0;
     virtual void Update(float deltaTime) = 0;

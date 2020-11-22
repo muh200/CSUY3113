@@ -16,7 +16,7 @@ void MenuScreen::ProcessInput() {
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_RETURN:
-                        state.nextScene = 0;
+                        nextScene = 0;
                         break;
                 }
             break;

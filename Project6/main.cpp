@@ -17,9 +17,7 @@
 #include "Util.h"
 
 #include "Scene.h"
-#include "Level1.h"
-#include "Level2.h"
-#include "Level3.h"
+#include "Level.h"
 #include "EndScreen.h"
 #include "MenuScreen.h"
 
@@ -35,14 +33,10 @@ SDL_Window* displayWindow;
 bool gameIsRunning = true;
 
 Scene *currentScene = nullptr;
-Scene *scenes[6];
+Scene *scenes[4];
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
-int lives = 3;
-
-Mix_Music *music = nullptr;
-Mix_Chunk *jumpSound = nullptr;
 
 void SwitchToScene(Scene *scene) {
     currentScene = scene;
@@ -77,21 +71,14 @@ void Initialize() {
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    scenes[0] = new Level1();
-    scenes[1] = new Level2();
-    scenes[2] = new Level3();
-    scenes[3] = new EndScreen("You won!");
-    scenes[4] = new EndScreen("You lost");
-    scenes[5] = new MenuScreen();
+    scenes[0] = new Level();
+    scenes[1] = new EndScreen("You won!");
+    scenes[2] = new EndScreen("You lost");
+    scenes[3] = new MenuScreen();
 
-    currentScene = scenes[5];
+    currentScene = scenes[0];
 
     SwitchToScene(currentScene);
-
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
-    music = Mix_LoadMUS("music.mp3");
-    jumpSound = Mix_LoadWAV("jump.wav");
-    Mix_PlayMusic(music, -1);
 }
 
 void ProcessInput() {
@@ -115,13 +102,6 @@ void Update() {
     accumulator = deltaTime;
 
     viewMatrix = glm::mat4(1.0f);
-    if (currentScene->state.player) {
-        if (currentScene->state.player->position.x > 4.5) {
-            viewMatrix = glm::translate(viewMatrix, glm::vec3(-currentScene->state.player->position.x, 0, 0));
-        } else {
-            viewMatrix = glm::translate(viewMatrix, glm::vec3(-4.5, 0, 0));
-        }
-    }
 }
 
 void Render() {
@@ -136,9 +116,6 @@ void Render() {
 
 
 void Shutdown() {
-    Mix_FreeMusic(music);
-    Mix_FreeChunk(jumpSound);
-
     SDL_Quit();
 }
 
@@ -149,7 +126,7 @@ int main(int argc, char* argv[]) {
         ProcessInput();
         Update();
         Render();
-        if (currentScene->state.nextScene >= 0) SwitchToScene(scenes[currentScene->state.nextScene]);
+        if (currentScene->nextScene >= 0) SwitchToScene(scenes[currentScene->nextScene]);
     }
 
     Shutdown();

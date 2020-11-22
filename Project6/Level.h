@@ -3,9 +3,19 @@
 #include "Scene.h"
 #include <SDL_mixer.h>
 
-extern Mix_Chunk *jumpSound;
+struct GameState {
+    Map *map = nullptr;
+    Entity *player = nullptr;
+    Entity *enemies = nullptr;
+};
 
 class Level : public Scene {
 public:
-    void ProcessInput() override;
+    virtual void Initialize();
+    virtual void ProcessInput();
+    virtual void Update(float deltaTime);
+    virtual void Render(ShaderProgram *program);
+private:
+    GameState state;
+    GLuint fontTextureID;
 };

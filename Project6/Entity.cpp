@@ -39,11 +39,7 @@ void Entity::Update(float deltaTime, Entity *player, Entity *objects, int object
         }
     }
 
-    if (jump) {
-        jump = false;
-        velocity.y += jumpPower;
-    }
-    velocity.x = movement.x * speed;
+    velocity = movement * speed;
     velocity += acceleration * deltaTime;
     
     position.y += velocity.y * deltaTime;
@@ -65,71 +61,7 @@ void Entity::Update(float deltaTime, Entity *player, Entity *objects, int object
     modelMatrix = glm::translate(modelMatrix, position);
 }
 
-void Entity::AI(Entity* player, Map* map) {
-    switch (aiType) {
-        case WALKER:
-            AIWalker(player);
-            break;
-        case JUMPER:
-            AIJumper(player);
-            break;
-        case PATROLLER:
-            AIPatroller(map);
-            break;
-    }
-}
-
-
-void Entity::AIWalker(Entity* player) {
-    const float walkingThreshold = 0.05f;
-    // The enemy should only change direction if the player is past a certian
-    // distance from the player. Otherwise, we get flickering behavior when the
-    // player is directly above the enemy.
-    if (fabs(position.x - player->position.x) > walkingThreshold) {
-        if (position.x < player->position.x) {
-            movement.x = 1;
-            animIndices = animRight;
-        } else if (position.x > player->position.x) {
-            movement.x = -1;
-            animIndices = animLeft;
-        }
-    } else {
-        movement.x = 0;
-    }
-}
-
-void Entity::AIJumper(Entity* player) {
-    const float jumpingThreshold = 0.05f;
-    // The enemy should only change direction if the player is past a certian
-    // distance from the player. Otherwise, we get flickering behavior when the
-    // player is directly above the enemy.
-    if (fabs(position.x - player->position.x) > jumpingThreshold) {
-        if (position.x < player->position.x) {
-            movement.x = 1;
-            if (collidedBottom) jump = true;
-            animIndices = animRight;
-        } else if (position.x > player->position.x) {
-            movement.x = -1;
-            if (collidedBottom) jump = true;
-            animIndices = animLeft;
-        }
-    } else {
-        movement.x = 0;
-    }
-}
-
-void Entity::AIPatroller(Map* map) {
-    glm::vec3 triggerPoint = position + glm::vec3(((movement.x > 0) ? 0.5 : -0.5), -1, 0);
-    float x, y;
-    if (!map->IsSolid(triggerPoint, &x, &y) || collidedLeft || collidedRight) {
-        movement.x *= -1;
-        if (movement.x < 0) {
-            animIndices = animLeft;
-        } else {
-            animIndices = animRight;
-        }
-    }
-}
+void Entity::AI(Entity* player, Map* map) {}
 
 void Entity::CheckCollisionsX(Entity *objects, int objectCount)
 {

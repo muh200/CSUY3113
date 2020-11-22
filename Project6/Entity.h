@@ -15,8 +15,8 @@
 #include "Map.h"
 
 enum EntityType { PLAYER, ENEMY, PLATFORM };
-enum AIType { WALKER, JUMPER, PATROLLER };
-enum AIState { WALKING, JUMPING, PATROLLING };
+enum AIType {  };
+enum AIState {  };
 
 class Entity {
 public:
@@ -35,9 +35,6 @@ public:
     float width = 1;
     float height = 1;
 
-    bool jump = false;
-    float jumpPower = 0;
-    
     GLuint textureID;
     
     glm::mat4 modelMatrix;
