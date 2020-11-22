@@ -1,0 +1,12 @@
+﻿  EndScreen.cpp
+  Level.cpp
+  Level1.cpp
+  Level2.cpp
+  Level3.cpp
+  Map.cpp
+Z:\projects\CSUY3113\Project5\Map.cpp(93,16): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+Z:\projects\CSUY3113\Project5\Map.cpp(94,16): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+  MenuScreen.cpp
+  Util.cpp
+  Generating Code...
+  SDLProject.vcxproj -> Z:\projects\CSUY3113\Project5\Debug\SDLProject.exe
