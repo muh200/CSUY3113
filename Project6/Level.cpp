@@ -117,6 +117,8 @@ void Level::ProcessInput() {
 
 void Level::Update(float deltaTime) {
     state.player->Update(deltaTime, state.player, nullptr, 0, state.map);
+    state.player->position.x = std::clamp(state.player->position.x, 0.0f, LEVEL1_WIDTH - 1.0f);
+    state.player->position.y = std::clamp(state.player->position.y, -(LEVEL1_HEIGHT - 1.0f), 0.0f);
 
     // if (state.player->position.x >= state.map->tileToCoord(LEVEL1_WIDTH - 2, 0).x) {
     //     nextScene = 1;
