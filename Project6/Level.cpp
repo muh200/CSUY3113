@@ -6,10 +6,10 @@
 
 unsigned int level1_data[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1,
-    1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 void Level::Initialize() {
@@ -116,17 +116,17 @@ void Level::Update(float deltaTime) {
     //     return;
     // }
 
-    for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
-        state.enemies[i].Update(deltaTime, state.player, nullptr, 0, state.map);
-    }
+    // for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
+    //     state.enemies[i].Update(deltaTime, state.player, nullptr, 0, state.map);
+    // }
 }
 
 void Level::Render(ShaderProgram *program) {
     state.map->Render(program);
 
-    for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
-        state.enemies[i].Render(program);
-    }
+    // for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
+    //     state.enemies[i].Render(program);
+    // }
 
     state.player->Render(program);
 }

@@ -20,7 +20,6 @@ void Map::Build()
         for(int x = 0; x < this->width; x++) {
 
             int tile = levelData[y * width + x];
-            if (tile == 0) continue;
 
             float u = (float)(tile % tile_count_x) / (float)tile_count_x;
             float v = (float)(tile / tile_count_x) / (float)tile_count_y;
