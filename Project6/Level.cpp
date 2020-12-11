@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #define LEVEL1_AI_COUNT 2
+#define LEVEL1_BALL_COUNT 3
 #define LEVEL1_WIDTH 17
 #define LEVEL1_HEIGHT 10
 
@@ -61,12 +62,22 @@ void Level::Initialize() {
 
         state.enemies[i].animIndices = state.enemies[i].animLeft;
         state.enemies[i].textureID = enemyTextureID;
-        state.enemies[i].acceleration = glm::vec3(0, -9.8f, 0);
 
         state.enemies[i].movement = glm::vec3(1, 0, 0);
         state.enemies[i].animIndices = state.enemies[0].animRight;
     }
 
+    GLuint ballTextureID = Util::LoadTexture("ball.png");
+    state.balls = new Entity[LEVEL1_BALL_COUNT];
+    for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+        state.balls[i] = Entity();
+        state.balls[i].type = BALL;
+        state.balls[i].textureID = ballTextureID;
+
+        state.balls[i].width = 0.5f;
+        state.balls[i].height = 0.5f;
+        state.balls[i].scale = 0.5f;
+    }
 
     GLuint mapTextureID = Util::LoadTexture("tileset.png");
     state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 2, 1);
@@ -129,6 +140,10 @@ void Level::Update(float deltaTime) {
     //     state.enemies[i].Update(deltaTime, state.player, nullptr, 0, state.map);
     // }
 
+    for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+        state.balls[i].Update(deltaTime, state.player, nullptr, 0, state.map);
+    }
+
     viewMatrix = glm::mat4(1.0f);
     float xView = -std::clamp(state.player->position.x, 4.5f, LEVEL1_WIDTH - 5.5f);
     float yView = -std::clamp(state.player->position.y, -(LEVEL1_HEIGHT - 4.25f), -3.25f);
@@ -141,6 +156,10 @@ void Level::Render(ShaderProgram *program) {
     // for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
     //     state.enemies[i].Render(program);
     // }
+
+    for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+        state.balls[i].Render(program);
+    }
 
     state.player->Render(program);
 }

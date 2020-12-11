@@ -7,6 +7,7 @@ struct GameState {
     Map *map = nullptr;
     Entity *player = nullptr;
     Entity *enemies = nullptr;
+    Entity *balls = nullptr;
 };
 
 class Level : public Scene {

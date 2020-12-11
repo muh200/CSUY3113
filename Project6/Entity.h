@@ -14,7 +14,7 @@
 #include "ShaderProgram.h"
 #include "Map.h"
 
-enum EntityType { PLAYER, ENEMY, PLATFORM };
+enum EntityType { PLAYER, ENEMY, BALL, PLATFORM };
 enum AIType {  };
 enum AIState {  };
 
@@ -34,6 +34,8 @@ public:
 
     float width = 1;
     float height = 1;
+
+    float scale = 1;
 
     GLuint textureID;
     
