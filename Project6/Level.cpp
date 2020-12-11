@@ -1,10 +1,17 @@
 #include "Level.h"
 
+#include <algorithm>
+
 #define LEVEL1_AI_COUNT 2
 #define LEVEL1_WIDTH 17
-#define LEVEL1_HEIGHT 5
+#define LEVEL1_HEIGHT 10
 
 unsigned int level1_data[] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -119,6 +126,11 @@ void Level::Update(float deltaTime) {
     // for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
     //     state.enemies[i].Update(deltaTime, state.player, nullptr, 0, state.map);
     // }
+
+    viewMatrix = glm::mat4(1.0f);
+    float xView = -std::clamp(state.player->position.x, 4.5f, LEVEL1_WIDTH - 5.5f);
+    float yView = -std::clamp(state.player->position.y, -(LEVEL1_HEIGHT - 4.25f), -3.25f);
+    viewMatrix = glm::translate(viewMatrix, glm::vec3(xView, yView, 0.0f));
 }
 
 void Level::Render(ShaderProgram *program) {

@@ -100,8 +100,6 @@ void Update() {
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
-
-    viewMatrix = glm::mat4(1.0f);
 }
 
 void Render() {

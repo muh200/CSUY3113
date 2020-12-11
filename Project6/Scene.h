@@ -16,6 +16,7 @@
 #include "Map.h"
 
 extern bool gameIsRunning;
+extern glm::mat4 viewMatrix;
 
 class Scene {
 public:
