@@ -122,6 +122,22 @@ void Level::ProcessInput() {
         state.player->animIndices = state.player->animDown;
     }
 
+    int x, y;
+    if (SDL_GetMouseState(&x, &y)) {
+        float unit_x = ((x / 640.0f) * 10.0f) - 5.0f;
+        float unit_y = (((480.0f - y) / 480.0f) * 7.5f) - 3.75;
+        float xView = -std::clamp(state.player->position.x, 4.5f, LEVEL1_WIDTH - 5.5f);
+        float yView = -std::clamp(state.player->position.y, -(LEVEL1_HEIGHT - 4.25f), -3.25f);
+        unit_x -= xView;
+        unit_y -= yView;
+        for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+            if (state.player->CheckCollision(&state.balls[i])) {
+                state.player->movement = glm::vec3(0);
+                state.balls[i].position = glm::vec3(unit_x, unit_y, 0);
+                break;
+            }
+        }
+    }
 
     if (glm::length(state.player->movement) > 1.0f) {
         state.player->movement = glm::normalize(state.player->movement);
