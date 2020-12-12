@@ -17,6 +17,8 @@
 
 extern bool gameIsRunning;
 extern glm::mat4 viewMatrix;
+extern int playerScore;
+extern int enemyScore;
 
 class Scene {
 public:

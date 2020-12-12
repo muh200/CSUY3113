@@ -152,6 +152,8 @@ void Level::ProcessInput() {
                 state.balls[i].movement = state.throwDirections[i];
                 state.throwDirections[i] = glm::vec3(0);
                 state.throwPowers[i] = 0;
+                state.player->CheckCollisionsX(&state.balls[i], 1);
+                state.player->CheckCollisionsY(&state.balls[i], 1);
                 break;
             }
         }
@@ -182,8 +184,25 @@ void Level::Update(float deltaTime) {
 
     for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
         if (state.player->CheckCollision(&state.balls[i]) && glm::length(state.balls[i].velocity) == 0) {
-            state.balls[i].position = state.player->position + glm::vec3(0, -0.5, 0);
+            if (state.player->animIndices == state.player->animRight) {
+                state.balls[i].position = state.player->position + glm::vec3(0.5, 0, 0);
+            } else if (state.player->animIndices == state.player->animLeft) {
+                state.balls[i].position = state.player->position + glm::vec3(-0.5, 0, 0);
+            } else if (state.player->animIndices == state.player->animUp) {
+                state.balls[i].position = state.player->position + glm::vec3(0, 0.5, 0);
+            } else if (state.player->animIndices == state.player->animDown) {
+                state.balls[i].position = state.player->position + glm::vec3(0, -0.5, 0);
+            }
             break;
+        }
+    }
+
+    for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+        if (state.player->CheckCollision(&state.balls[i]) && glm::length(state.balls[i].velocity) != 0) {
+            state.balls[i].CheckCollisionsX(state.player, 1);
+            state.balls[i].CheckCollisionsY(state.player, 1);
+            state.balls[i].movement *= -1;
+            ++enemyScore;
         }
     }
 
@@ -222,4 +241,10 @@ void Level::Render(ShaderProgram *program) {
     for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
         state.balls[i].Render(program);
     }
+
+    float xView = -std::clamp(state.player->position.x, 4.5f, LEVEL1_WIDTH - 5.5f);
+    float yView = -std::clamp(state.player->position.y, -(LEVEL1_HEIGHT - 4.25f), -3.25f);
+
+    Util::DrawText(program, fontTextureID, std::to_string(playerScore), 0.5f, -0.25f, glm::vec3(-4.5f - xView, 3.25f - yView, 0));
+    Util::DrawText(program, fontTextureID, std::to_string(enemyScore), 0.5f, -0.25f, glm::vec3(4.5f - xView, 3.25f - yView, 0));
 }

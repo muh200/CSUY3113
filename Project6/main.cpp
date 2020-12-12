@@ -38,6 +38,9 @@ Scene *scenes[4];
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 
+int playerScore = 0;
+int enemyScore = 0;
+
 void SwitchToScene(Scene *scene) {
     currentScene = scene;
     currentScene->Initialize();
