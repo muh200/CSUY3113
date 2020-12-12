@@ -115,16 +115,16 @@ void Level::ProcessInput() {
 
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
-    if (keys[SDL_SCANCODE_LEFT]) {
+    if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) {
         state.player->movement.x = -1.0f;
         state.player->animIndices = state.player->animLeft;
-    } else if (keys[SDL_SCANCODE_RIGHT]) {
+    } else if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D]) {
         state.player->movement.x = 1.0f;
         state.player->animIndices = state.player->animRight;
-    } else if (keys[SDL_SCANCODE_UP]) {
+    } else if (keys[SDL_SCANCODE_UP] || keys[SDL_SCANCODE_W]) {
         state.player->movement.y = 1.0f;
         state.player->animIndices = state.player->animUp;
-    } else if (keys[SDL_SCANCODE_DOWN]) {
+    } else if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S]) {
         state.player->movement.y = -1.0f;
         state.player->animIndices = state.player->animDown;
     }
