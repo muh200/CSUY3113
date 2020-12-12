@@ -59,7 +59,7 @@ void Entity::Update(float deltaTime, Entity *player, Entity *objects, int object
 
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, 1));
-    modelMatrix = glm::translate(modelMatrix, position);
+    modelMatrix = glm::translate(modelMatrix, position * 1.0f/scale);
 }
 
 void Entity::AI(Entity* player, Map* map) {}

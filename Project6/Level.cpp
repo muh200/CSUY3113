@@ -77,6 +77,8 @@ void Level::Initialize() {
         state.balls[i].width = 0.5f;
         state.balls[i].height = 0.5f;
         state.balls[i].scale = 0.5f;
+
+        state.balls[i].position = glm::vec3(0, 0, 0);
     }
 
     GLuint mapTextureID = Util::LoadTexture("tileset.png");
@@ -144,6 +146,13 @@ void Level::Update(float deltaTime) {
         state.balls[i].Update(deltaTime, state.player, nullptr, 0, state.map);
     }
 
+    for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+        if (state.player->CheckCollision(&state.balls[i]) && glm::length(state.balls[i].velocity) == 0) {
+            state.balls[i].position = state.player->position + glm::vec3(0, -0.5, 0);
+            break;
+        }
+    }
+
     viewMatrix = glm::mat4(1.0f);
     float xView = -std::clamp(state.player->position.x, 4.5f, LEVEL1_WIDTH - 5.5f);
     float yView = -std::clamp(state.player->position.y, -(LEVEL1_HEIGHT - 4.25f), -3.25f);
@@ -157,9 +166,9 @@ void Level::Render(ShaderProgram *program) {
     //     state.enemies[i].Render(program);
     // }
 
+    state.player->Render(program);
+
     for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
         state.balls[i].Render(program);
     }
-
-    state.player->Render(program);
 }
