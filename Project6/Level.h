@@ -8,6 +8,8 @@ struct GameState {
     Entity *player = nullptr;
     Entity *enemies = nullptr;
     Entity *balls = nullptr;
+    glm::vec3 *throwDirections = nullptr;
+    float *throwPowers = nullptr;
 };
 
 class Level : public Scene {

@@ -81,6 +81,13 @@ void Level::Initialize() {
         state.balls[i].position = glm::vec3(0, 0, 0);
     }
 
+    state.throwDirections = new glm::vec3[LEVEL1_BALL_COUNT];
+    state.throwPowers = new float[LEVEL1_BALL_COUNT];
+    for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+        state.throwDirections[i] = glm::vec3(0);
+        state.throwPowers[i] = 0;
+    }
+
     GLuint mapTextureID = Util::LoadTexture("tileset.png");
     state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 2, 1);
     state.enemies[0].position = state.map->tileToCoord(7, 3);
@@ -133,7 +140,18 @@ void Level::ProcessInput() {
         for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
             if (state.player->CheckCollision(&state.balls[i])) {
                 state.player->movement = glm::vec3(0);
-                state.balls[i].position = glm::vec3(unit_x, unit_y, 0);
+                state.throwPowers[i] += 0.25f;
+                state.throwDirections[i] = glm::normalize(glm::vec3(unit_x, unit_y, 0) - state.player->position);
+                break;
+            }
+        }
+    } else {
+        for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+            if (state.player->CheckCollision(&state.balls[i]) && state.throwPowers[i] > 0) {
+                state.balls[i].speed = state.throwPowers[i];
+                state.balls[i].movement = state.throwDirections[i];
+                state.throwDirections[i] = glm::vec3(0);
+                state.throwPowers[i] = 0;
                 break;
             }
         }
@@ -166,6 +184,14 @@ void Level::Update(float deltaTime) {
         if (state.player->CheckCollision(&state.balls[i]) && glm::length(state.balls[i].velocity) == 0) {
             state.balls[i].position = state.player->position + glm::vec3(0, -0.5, 0);
             break;
+        }
+    }
+
+    for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+        if (glm::length(state.balls[i].movement) <= 0.1f) {
+            state.balls[i].movement = glm::vec3(0);
+        } else {
+            state.balls[i].movement *= 0.9f;
         }
     }
 
