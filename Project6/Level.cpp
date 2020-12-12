@@ -195,6 +195,15 @@ void Level::Update(float deltaTime) {
         }
     }
 
+    for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+        if (state.balls[i].position.x <= 0 || state.balls[i].position.x >= LEVEL1_WIDTH - 1) {
+            state.balls[i].movement.x *= -1;
+        }
+        if (state.balls[i].position.y >= 0 || state.balls[i].position.y <= -(LEVEL1_HEIGHT - 1)) {
+            state.balls[i].movement.y *= -1;
+        }
+    }
+
     viewMatrix = glm::mat4(1.0f);
     float xView = -std::clamp(state.player->position.x, 4.5f, LEVEL1_WIDTH - 5.5f);
     float yView = -std::clamp(state.player->position.y, -(LEVEL1_HEIGHT - 4.25f), -3.25f);
