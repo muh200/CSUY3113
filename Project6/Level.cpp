@@ -48,7 +48,7 @@ void Level::Initialize() {
     for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
         state.enemies[i] = Entity();
         state.enemies[i].type = ENEMY;
-        state.enemies[i].speed = 2.0f;
+        state.enemies[i].speed = 0.5f;
         state.enemies[i].animCols = 3;
         state.enemies[i].animRows = 4;
         state.enemies[i].animTime = 0.20f;
@@ -76,7 +76,7 @@ void Level::Initialize() {
         state.balls[i].height = 0.5f;
         state.balls[i].scale = 0.5f;
 
-        state.balls[i].position = glm::vec3(0, 0, 0);
+        state.balls[i].position = glm::vec3(5, -5, 0);
     }
 
     state.throwDirections = new glm::vec3[LEVEL1_BALL_COUNT];
@@ -173,6 +173,43 @@ void Level::Update(float deltaTime) {
 
     for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
         state.enemies[i].Update(deltaTime, state.player, nullptr, 0, state.map);
+
+        Entity* nearestBall = nullptr;
+        float nearestBallDistance = 10000;
+        bool holdingBall = false;
+        for (int j = 0; j < LEVEL1_BALL_COUNT; ++j) {
+            float currBallDistance = glm::distance(state.balls[j].position, state.enemies[i].position);
+            if (state.balls[j].CheckCollision(&state.enemies[i])) {
+                holdingBall = true;
+            } else if(currBallDistance < nearestBallDistance) {
+                nearestBall = &state.balls[j];
+                nearestBallDistance = currBallDistance;
+            }
+        }
+        if (!holdingBall && nearestBall) {
+            state.enemies[i].movement = glm::normalize(nearestBall->position - state.enemies[i].position);
+        } else {
+            state.enemies[i].movement = glm::normalize(state.player->position - state.enemies[i].position);
+        }
+        if (abs(state.enemies[i].movement.x) >= abs(state.enemies[i].movement.y)) {
+            state.enemies[i].movement.y = 0;
+        } else {
+            state.enemies[i].movement.x = 0;
+        }
+
+        state.enemies[i].movement = glm::normalize(state.enemies[i].movement);
+        if (state.enemies[i].movement.x == 1) {
+            state.enemies[i].animIndices = state.enemies[i].animRight;
+        } else if (state.enemies[i].movement.x == -1) {
+            state.enemies[i].animIndices = state.enemies[i].animLeft;
+        } else if (state.enemies[i].movement.y == 1) {
+            state.enemies[i].animIndices = state.enemies[i].animUp;
+        } else if (state.enemies[i].movement.y == -1) {
+            state.enemies[i].animIndices = state.enemies[i].animDown;
+        }
+
+        state.enemies[i].position.x = std::clamp(state.enemies[i].position.x, 0.0f, LEVEL1_WIDTH - 1.0f);
+        state.enemies[i].position.y = std::clamp(state.enemies[i].position.y, -(LEVEL1_HEIGHT - 1.0f), 0.0f);
     }
 
     for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
@@ -194,11 +231,30 @@ void Level::Update(float deltaTime) {
         }
     }
 
+    for (int j = 0; j < LEVEL1_AI_COUNT; ++j) {
+        for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+            if (state.enemies[j].CheckCollision(&state.balls[i]) && glm::length(state.balls[i].velocity) == 0) {
+                if (state.enemies[j].animIndices == state.enemies[j].animRight) {
+                    state.balls[i].position = state.enemies[j].position + glm::vec3(0.5, 0, 0);
+                } else if (state.enemies[j].animIndices == state.enemies[j].animLeft) {
+                    state.balls[i].position = state.enemies[j].position + glm::vec3(-0.5, 0, 0);
+                } else if (state.enemies[j].animIndices == state.enemies[j].animUp) {
+                    state.balls[i].position = state.enemies[j].position + glm::vec3(0, 0.5, 0);
+                } else if (state.enemies[j].animIndices == state.enemies[j].animDown) {
+                    state.balls[i].position = state.enemies[j].position + glm::vec3(0, -0.5, 0);
+                }
+                break;
+            }
+        }
+    }
+
     for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
         if (state.player->CheckCollision(&state.balls[i]) && glm::length(state.balls[i].velocity) != 0) {
             state.balls[i].CheckCollisionsX(state.player, 1);
             state.balls[i].CheckCollisionsY(state.player, 1);
             state.balls[i].movement *= -1;
+            state.balls[i].position.x = std::clamp(state.balls[i].position.x, 0.0f, LEVEL1_WIDTH - 1.0f);
+            state.balls[i].position.y = std::clamp(state.balls[i].position.y, -(LEVEL1_HEIGHT - 1.0f), 0.0f);
             ++enemyScore;
         }
     }
