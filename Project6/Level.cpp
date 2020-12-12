@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#define LEVEL1_AI_COUNT 2
+#define LEVEL1_AI_COUNT 1
 #define LEVEL1_BALL_COUNT 3
 #define LEVEL1_WIDTH 17
 #define LEVEL1_HEIGHT 10
@@ -48,8 +48,7 @@ void Level::Initialize() {
     for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
         state.enemies[i] = Entity();
         state.enemies[i].type = ENEMY;
-        state.enemies[i].speed = 0.25f;
-        state.enemies[i].width = 0.60f;
+        state.enemies[i].speed = 2.0f;
         state.enemies[i].animCols = 3;
         state.enemies[i].animRows = 4;
         state.enemies[i].animTime = 0.20f;
@@ -60,11 +59,10 @@ void Level::Initialize() {
         state.enemies[i].animRight = new int[3]{6, 7, 8};
         state.enemies[i].animUp = new int[3]{9, 10, 11};
 
-        state.enemies[i].animIndices = state.enemies[i].animLeft;
+        state.enemies[i].animIndices = state.enemies[i].animRight;
         state.enemies[i].textureID = enemyTextureID;
 
         state.enemies[i].movement = glm::vec3(1, 0, 0);
-        state.enemies[i].animIndices = state.enemies[0].animRight;
     }
 
     GLuint ballTextureID = Util::LoadTexture("ball.png");
@@ -90,8 +88,7 @@ void Level::Initialize() {
 
     GLuint mapTextureID = Util::LoadTexture("tileset.png");
     state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 2, 1);
-    state.enemies[0].position = state.map->tileToCoord(7, 3);
-    state.enemies[1].position = state.map->tileToCoord(12, 1);
+    state.enemies[0].position = state.map->tileToCoord(3, -3);
 
     fontTextureID = Util::LoadTexture("font1.png");
 }
@@ -174,9 +171,9 @@ void Level::Update(float deltaTime) {
     //     return;
     // }
 
-    // for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
-    //     state.enemies[i].Update(deltaTime, state.player, nullptr, 0, state.map);
-    // }
+    for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
+        state.enemies[i].Update(deltaTime, state.player, nullptr, 0, state.map);
+    }
 
     for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
         state.balls[i].Update(deltaTime, state.player, nullptr, 0, state.map);
@@ -232,9 +229,9 @@ void Level::Update(float deltaTime) {
 void Level::Render(ShaderProgram *program) {
     state.map->Render(program);
 
-    // for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
-    //     state.enemies[i].Render(program);
-    // }
+    for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
+        state.enemies[i].Render(program);
+    }
 
     state.player->Render(program);
 
