@@ -1,2 +1,4 @@
 Z:\projects\CSUY3113\Project5\Debug\SDLProject.exe
 Z:\projects\CSUY3113\Project5\Debug\SDLProject.pdb
+Z:\projects\CSUY3113\Project6\Debug\SDLProject.exe
+Z:\projects\CSUY3113\Project6\Debug\SDLProject.pdb
