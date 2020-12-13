@@ -1,10 +1,10 @@
 #include "Level.h"
 
 #include <algorithm>
-#include <iostream>
+#include <cstdlib>
 
-#define LEVEL1_AI_COUNT 1
-#define LEVEL1_BALL_COUNT 3
+#define LEVEL1_AI_COUNT 6
+#define LEVEL1_BALL_COUNT 12
 #define LEVEL1_WIDTH 17
 #define LEVEL1_HEIGHT 10
 
@@ -76,8 +76,6 @@ void Level::Initialize() {
         state.balls[i].width = 0.5f;
         state.balls[i].height = 0.5f;
         state.balls[i].scale = 0.5f;
-
-        state.balls[i].position = glm::vec3(5, -5, 0);
     }
 
     state.throwDirections = new glm::vec3[LEVEL1_BALL_COUNT];
@@ -89,7 +87,17 @@ void Level::Initialize() {
 
     GLuint mapTextureID = Util::LoadTexture("tileset.png");
     state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 2, 1);
-    state.enemies[0].position = state.map->tileToCoord(3, -3);
+    for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
+        int x = 1 + std::rand()/((RAND_MAX + 1u)/(LEVEL1_WIDTH - 1));
+        int y = 1 + std::rand()/((RAND_MAX + 1u)/(LEVEL1_HEIGHT - 1));
+        state.enemies[i].position = state.map->tileToCoord(x, -y);
+    }
+
+    for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+        int x = 1 + std::rand()/((RAND_MAX + 1u)/(LEVEL1_WIDTH - 1));
+        int y = 1 + std::rand()/((RAND_MAX + 1u)/(LEVEL1_HEIGHT - 1));
+        state.balls[i].position = state.map->tileToCoord(x, -y);
+    }
 
     fontTextureID = Util::LoadTexture("font1.png");
 }
@@ -194,7 +202,6 @@ void Level::Update(float deltaTime) {
         } else {
             state.enemies[i].movement = glm::normalize(state.player->position - state.enemies[i].position);
             if (holdingBall && glm::length(state.player->position - state.enemies[i].position) <= 3) {
-                std::cerr << nearestBall->position.x << ' ' << nearestBall->position.y << std::endl;
                 nearestBall->velocity = glm::vec3(100, 0, 0);
                 nearestBall->movement = glm::normalize(state.player->position - state.enemies[i].position);
                 nearestBall->speed = 20.0f;
