@@ -261,7 +261,8 @@ void Level::Update(float deltaTime) {
         if (state.player->CheckCollision(&state.balls[i]) && glm::length(state.balls[i].velocity) != 0) {
             state.balls[i].CheckCollisionsX(state.player, 1);
             state.balls[i].CheckCollisionsY(state.player, 1);
-            state.balls[i].movement *= -1;
+            // state.balls[i].movement *= -1;
+            state.balls[i].movement = glm::vec3(0);
             state.balls[i].position.x = std::clamp(state.balls[i].position.x, 0.0f, LEVEL1_WIDTH - 1.0f);
             state.balls[i].position.y = std::clamp(state.balls[i].position.y, -(LEVEL1_HEIGHT - 1.0f), 0.0f);
             ++enemyScore;
@@ -273,7 +274,8 @@ void Level::Update(float deltaTime) {
             if (state.enemies[j].CheckCollision(&state.balls[i]) && glm::length(state.balls[i].velocity) != 0) {
                 state.balls[i].CheckCollisionsX(&state.enemies[j], 1);
                 state.balls[i].CheckCollisionsY(&state.enemies[j], 1);
-                state.balls[i].movement *= -1;
+                // state.balls[i].movement *= -1;
+                state.balls[i].movement = glm::vec3(0);
                 state.balls[i].position.x = std::clamp(state.balls[i].position.x, 0.0f, LEVEL1_WIDTH - 1.0f);
                 state.balls[i].position.y = std::clamp(state.balls[i].position.y, -(LEVEL1_HEIGHT - 1.0f), 0.0f);
                 ++playerScore;
