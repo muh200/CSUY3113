@@ -27,5 +27,5 @@ void MenuScreen::ProcessInput() {
 void MenuScreen::Update(float deltaTime) {}
 
 void MenuScreen::Render(ShaderProgram *program) {
-    Util::DrawText(program, fontTextureID, "Knight-man: Press enter to start", 0.5f, -0.25f, glm::vec3(-4.0, 0, 0));
+    Util::DrawText(program, fontTextureID, "School's Out: Press enter to start", 0.5f, -0.25f, glm::vec3(-4.0, 0, 0));
 }

@@ -79,7 +79,7 @@ void Initialize() {
     scenes[2] = new EndScreen("You lost");
     scenes[3] = new MenuScreen();
 
-    currentScene = scenes[0];
+    currentScene = scenes[3];
 
     SwitchToScene(currentScene);
 }
