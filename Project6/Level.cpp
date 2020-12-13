@@ -1,6 +1,7 @@
 #include "Level.h"
 
 #include <algorithm>
+#include <iostream>
 
 #define LEVEL1_AI_COUNT 1
 #define LEVEL1_BALL_COUNT 3
@@ -181,6 +182,8 @@ void Level::Update(float deltaTime) {
             float currBallDistance = glm::distance(state.balls[j].position, state.enemies[i].position);
             if (state.balls[j].CheckCollision(&state.enemies[i])) {
                 holdingBall = true;
+                nearestBall = &state.balls[j];
+                break;
             } else if(currBallDistance < nearestBallDistance) {
                 nearestBall = &state.balls[j];
                 nearestBallDistance = currBallDistance;
@@ -190,6 +193,12 @@ void Level::Update(float deltaTime) {
             state.enemies[i].movement = glm::normalize(nearestBall->position - state.enemies[i].position);
         } else {
             state.enemies[i].movement = glm::normalize(state.player->position - state.enemies[i].position);
+            if (holdingBall && glm::length(state.player->position - state.enemies[i].position) <= 3) {
+                std::cerr << nearestBall->position.x << ' ' << nearestBall->position.y << std::endl;
+                nearestBall->velocity = glm::vec3(100, 0, 0);
+                nearestBall->movement = glm::normalize(state.player->position - state.enemies[i].position);
+                nearestBall->speed = 20.0f;
+            }
         }
         if (abs(state.enemies[i].movement.x) >= abs(state.enemies[i].movement.y)) {
             state.enemies[i].movement.y = 0;
