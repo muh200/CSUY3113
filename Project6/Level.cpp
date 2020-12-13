@@ -8,6 +8,8 @@
 #define LEVEL1_WIDTH 17
 #define LEVEL1_HEIGHT 10
 
+float timeLeft = 120;
+
 unsigned int level1_data[] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -171,14 +173,20 @@ void Level::ProcessInput() {
 }
 
 void Level::Update(float deltaTime) {
+    timeLeft -= deltaTime;
+    if (timeLeft <= 0) {
+        viewMatrix = glm::mat4(1.0f);
+        if (enemyScore > playerScore) {
+            nextScene = 2;
+        } else {
+            nextScene = 1;
+        }
+        return;
+    }
+
     state.player->Update(deltaTime, state.player, nullptr, 0, state.map);
     state.player->position.x = std::clamp(state.player->position.x, 0.0f, LEVEL1_WIDTH - 1.0f);
     state.player->position.y = std::clamp(state.player->position.y, -(LEVEL1_HEIGHT - 1.0f), 0.0f);
-
-    // if (state.player->position.x >= state.map->tileToCoord(LEVEL1_WIDTH - 2, 0).x) {
-    //     nextScene = 1;
-    //     return;
-    // }
 
     for (int i = 0; i < LEVEL1_AI_COUNT; ++i) {
         state.enemies[i].Update(deltaTime, state.player, nullptr, 0, state.map);
@@ -331,4 +339,5 @@ void Level::Render(ShaderProgram *program) {
 
     Util::DrawText(program, fontTextureID, std::to_string(playerScore), 0.5f, -0.25f, glm::vec3(-4.5f - xView, 3.25f - yView, 0));
     Util::DrawText(program, fontTextureID, std::to_string(enemyScore), 0.5f, -0.25f, glm::vec3(4.5f - xView, 3.25f - yView, 0));
+    Util::DrawText(program, fontTextureID, "Time Left: " + std::to_string((int)timeLeft), 0.5f, -0.25f, glm::vec3(0 - xView, 3.25f - yView, 0));
 }
