@@ -41,6 +41,9 @@ glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 int playerScore = 0;
 int enemyScore = 0;
 
+Mix_Music *music = nullptr;
+Mix_Chunk *hitSound = nullptr;
+
 void SwitchToScene(Scene *scene) {
     currentScene = scene;
     currentScene->Initialize();
@@ -82,6 +85,11 @@ void Initialize() {
     currentScene = scenes[3];
 
     SwitchToScene(currentScene);
+
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+    music = Mix_LoadMUS("music.mp3");
+    hitSound = Mix_LoadWAV("hit.wav");
+    Mix_PlayMusic(music, -1);
 }
 
 void ProcessInput() {
@@ -117,6 +125,9 @@ void Render() {
 
 
 void Shutdown() {
+    Mix_FreeMusic(music);
+    Mix_FreeChunk(hitSound);
+
     SDL_Quit();
 }
 

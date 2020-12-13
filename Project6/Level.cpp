@@ -281,6 +281,7 @@ void Level::Update(float deltaTime) {
             state.balls[i].position.x = std::clamp(state.balls[i].position.x, 0.0f, LEVEL1_WIDTH - 1.0f);
             state.balls[i].position.y = std::clamp(state.balls[i].position.y, -(LEVEL1_HEIGHT - 1.0f), 0.0f);
             ++enemyScore;
+            Mix_PlayChannel(-1, hitSound, 0);
         }
     }
 

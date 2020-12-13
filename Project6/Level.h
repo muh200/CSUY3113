@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include <SDL_mixer.h>
 
+extern Mix_Chunk *hitSound;
+
 struct GameState {
     Map *map = nullptr;
     Entity *player = nullptr;
