@@ -268,6 +268,19 @@ void Level::Update(float deltaTime) {
         }
     }
 
+    for (int j = 0; j < LEVEL1_AI_COUNT; ++j) {
+        for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
+            if (state.enemies[j].CheckCollision(&state.balls[i]) && glm::length(state.balls[i].velocity) != 0) {
+                state.balls[i].CheckCollisionsX(&state.enemies[j], 1);
+                state.balls[i].CheckCollisionsY(&state.enemies[j], 1);
+                state.balls[i].movement *= -1;
+                state.balls[i].position.x = std::clamp(state.balls[i].position.x, 0.0f, LEVEL1_WIDTH - 1.0f);
+                state.balls[i].position.y = std::clamp(state.balls[i].position.y, -(LEVEL1_HEIGHT - 1.0f), 0.0f);
+                ++playerScore;
+            }
+        }
+    }
+
     for (int i = 0; i < LEVEL1_BALL_COUNT; ++i) {
         if (glm::length(state.balls[i].movement) <= 0.1f) {
             state.balls[i].movement = glm::vec3(0);
